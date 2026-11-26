@@ -1,8 +1,9 @@
 ---
 // The way in, which ends the page: the Operations Center's icon over the call to join, with a live map of another
 // stretch of the route behind it, east of the yard, where two trains meet on the double track.
-import { DISCORD_URL, STATUS_URL } from '../data/site'
+import { STATUS_URL } from '../data/site'
 import LiveMap from './LiveMap.astro'
+import DiscordButton from './DiscordButton.astro'
 ---
 
 <section class="part join" aria-labelledby="join-title">
@@ -35,7 +36,7 @@ import LiveMap from './LiveMap.astro'
     <h2 id="join-title">Be there when it's available</h2>
     <p>The Operations Center is just for Forever Rail Community members, and you'll sign in with Discord. Not a member yet? Join today and you'll be ready on release day!</p>
     <div class="buttons">
-      <a class="button primary" href={DISCORD_URL}>Join the Discord</a>
+      <DiscordButton />
       <a class="button" href={STATUS_URL}>Server status</a>
     </div>
   </div>

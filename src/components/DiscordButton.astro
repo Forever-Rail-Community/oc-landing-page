@@ -1,0 +1,22 @@
+---
+// The button that takes people to the community's Discord, in Discord's own colors with its icon (from Simple Icons).
+import { siDiscord } from 'simple-icons'
+import { DISCORD_URL } from '../data/site'
+
+interface Props {
+  compact?: boolean // the shorter size, for the top bar
+}
+const { compact = false } = Astro.props
+---
+
+<a class:list={['button', 'discord', { compact }]} href={DISCORD_URL}>
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d={siDiscord.path} /></svg>
+  Join the Discord
+</a>
+
+<style>
+  .discord { gap: 9px; padding: 0 18px; border-color: #5865F2; background: #5865F2; color: #FFFFFF; font-weight: 600; }
+  .discord:hover { border-color: #4752C4; background: #4752C4; }
+  .compact { min-height: 38px; }
+  svg { fill: currentColor; flex: none; }
+</style>
