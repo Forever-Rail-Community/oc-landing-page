@@ -1,13 +1,11 @@
 # Draws the live maps' backgrounds: made-up terrain (contour lines, with the railroad running along the valley floors),
-# two rivers, and the rails over them. Everything is worked out once for the whole drawing, so every map of the route
-# shows the same hills and rivers, then drawn as lines at each map's own size (at twice the size and scaled down, to
-# smooth their edges), with the rails from public/track.webp scaled up and sharpened over them. Fixed seed, so it draws
-# the same every time.
+# two rivers, and the rails. Everything is worked out once for the whole drawing, so every map of the route shows the
+# same hills and rivers.
 #   python3 tools/draw-map.py
-# Makes each map at several widths in public/maps/, so a browser can fetch the one that suits the screen instead of
-# shrinking a huge one (which blurs thin lines): the whole route behind the opening's puzzle (and the same on its side,
-# route-tall, for phones), and the live maps. Writes src/data/maps.json, which tells LiveMap.astro and the puzzle each
-# map's view and widths.
+# The contour lines and rivers are saved as lines (src/data/terrain.json, drawn by Terrain.astro), so they're sharp at
+# any size. The rails are saved as pictures with a see-through background (public/maps/rails-*.webp), scaled up from
+# public/track.webp and firmed up, at several widths, so a browser can fetch the one that suits the screen instead of
+# shrinking a huge one; src/data/maps.json lists each map's view and widths for LiveMap.astro and the puzzle.
 # Needs numpy, scipy, scikit-image and Pillow.
 import json
 import os
@@ -16,15 +14,10 @@ from PIL import Image, ImageDraw
 from scipy import ndimage
 from skimage import measure
 
-SMOOTHING = 2  # lines are drawn at this many times the size, then scaled down
-BG = (24, 26, 30)
-CONTOUR, CONTOUR_STRONG = (36, 42, 40), (50, 58, 54)
-RIVER = (30, 50, 66)
 RAIL = (164, 168, 174)
-# Each map: its place in the drawing's coordinates (x, y, width and height), and the widths to save it at. It's drawn
-# once at the largest and scaled down for the rest.
+# Each map: its place in the drawing's coordinates (x, y, width and height), and the widths to save its rails at.
 MAPS = {
-    'route': ((0, 0, 1440, 900), [1440, 2160, 2880, 4320]),  # the whole drawing, behind the opening
+    'route': ((0, 0, 1440, 900), [1440, 2160, 2880, 4320]),  # the whole drawing, behind the opening (and on its side)
     'map': ((0, 310, 960, 590), [640, 960, 1280, 1920, 2560, 3840]),  # "Watch it run"
     'join': ((680, 220, 760, 340), [800, 1280, 1920, 2560, 3040]),  # behind the call to join
 }
@@ -40,14 +33,6 @@ rng = np.random.default_rng(31)
 gray = np.asarray(Image.open('public/track.webp').convert('L'), dtype=float)
 on_rail = gray > np.median(gray) + 40
 h, w = gray.shape
-
-def rails_at(view, scale):
-    # The rails for a view at its size: the drawing scaled up smoothly, then its soft edges firmed up, so they're sharp
-    # however large the map is drawn. Returned as how much rail covers each pixel, 0 to 1.
-    x0, y0, vw, vh = view
-    crop = Image.fromarray(gray.astype(np.uint8)).crop((x0 * 2, y0 * 2, (x0 + vw) * 2, (y0 + vh) * 2))
-    up = np.asarray(crop.resize((round(vw * scale), round(vh * scale)), Image.BICUBIC), dtype=float)
-    return np.clip((up - 55) / (135 - 55), 0, 1)[..., None]
 
 def smooth(points, per=40):
     p = np.array(points, dtype=float)
@@ -85,37 +70,42 @@ for i, level in enumerate(np.linspace(height.min(), height.max(), 40)[1:-1]):
     for c in measure.find_contours(height, level):
         if len(c) >= 30: contours.append((i % 5 == 0, c[:, ::-1] / 2))
 
-def draw(view, scale):
+def rails_at(view, width):
+    # The rails for a view at a width, as a picture with a see-through background: the drawing scaled up smoothly, then
+    # its soft edges firmed up, so they're sharp however large the map is drawn.
     x0, y0, vw, vh = view
-    k = scale * SMOOTHING
-    img = Image.new('RGB', (round(vw * k), round(vh * k)), BG)
-    pen = ImageDraw.Draw(img)
-    def line(points, color, width):
-        p = (np.asarray(points) - (x0, y0)) * k
-        if not ((p[:, 0] > -50).any() and (p[:, 0] < img.width + 50).any() and (p[:, 1] > -50).any() and (p[:, 1] < img.height + 50).any()):
-            return
-        pen.line([tuple(q) for q in p], fill=color, width=max(1, round(width * k)), joint='curve')
-    for strong, c in contours:
-        line(c, CONTOUR_STRONG if strong else CONTOUR, 1.2 if strong else 0.8)
-    for river in rivers:
-        line(river, RIVER, 5.5)
-    terrain = np.asarray(img.resize((round(vw * scale), round(vh * scale)), Image.LANCZOS), dtype=float)
-    cover = rails_at(view, scale)
-    return Image.fromarray((terrain * (1 - cover) + np.array(RAIL) * cover).round().astype(np.uint8))
+    size = (width, round(width * vh / vw))
+    crop = Image.fromarray(gray.astype(np.uint8)).crop((x0 * 2, y0 * 2, (x0 + vw) * 2, (y0 + vh) * 2))
+    up = np.asarray(crop.resize(size, Image.BICUBIC if width >= vw * 2 else Image.LANCZOS), dtype=float)
+    cover = np.clip((up - 55) / (135 - 55), 0, 1)
+    rgba = np.dstack([np.broadcast_to(np.array(RAIL, dtype=np.uint8), cover.shape + (3,)), (cover * 255).round().astype(np.uint8)])
+    return Image.fromarray(rgba, 'RGBA')
+
+def path(points, tolerance):
+    p = measure.approximate_polygon(np.asarray(points), tolerance)
+    return 'M' + ' L'.join(f'{x:.1f} {y:.1f}' for x, y in p)
 
 os.makedirs('public/maps', exist_ok=True)
 for old in os.listdir('public/maps'):
     os.remove(os.path.join('public/maps', old))
 manifest = {}
 for name, (view, widths) in MAPS.items():
-    big = draw(view, max(widths) / view[2])
     for width in widths:
-        img = big if width == big.width else big.resize((width, round(width * view[3] / view[2])), Image.LANCZOS)
-        img.save(f'public/maps/{name}-{width}.webp', quality=85, method=6)
+        img = rails_at(view, width)
+        img.save(f'public/maps/rails-{name}-{width}.webp', quality=90, method=6)
         if name == 'route':  # on its side too, named by its long side like the rest
-            img.rotate(90, expand=True).save(f'public/maps/route-tall-{width}.webp', quality=85, method=6)
+            img.rotate(90, expand=True).save(f'public/maps/rails-route-tall-{width}.webp', quality=90, method=6)
     manifest[name] = {'view': list(view), 'widths': widths}
     print(name, widths)
 with open('src/data/maps.json', 'w') as f:
     json.dump(manifest, f, indent=2)
     f.write('\n')
+
+# The contour lines (every fifth is drawn stronger) and rivers, for the whole drawing.
+terrain = {
+    'contours': [{'strong': strong, 'd': path(c, 0.25)} for strong, c in contours],
+    'rivers': [path(r, 0.3) for r in rivers],
+}
+with open('src/data/terrain.json', 'w') as f:
+    json.dump(terrain, f, separators=(',', ':'))
+print('src/data/terrain.json', len(terrain['contours']), 'contours')
