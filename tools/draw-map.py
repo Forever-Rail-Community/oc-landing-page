@@ -4,9 +4,13 @@
 # smooth their edges), with the rails from public/track.webp scaled up and sharpened over them. Fixed seed, so it draws
 # the same every time.
 #   python3 tools/draw-map.py
-# Makes public/route.webp (the whole route, behind the opening), public/route-tall.webp (the same on its side, for
-# phones), public/map.webp ("Watch it run") and public/map-join.webp (behind the call to join).
+# Makes each map at several widths in public/maps/, so a browser can fetch the one that suits the screen instead of
+# shrinking a huge one (which blurs thin lines): the whole route behind the opening's puzzle (and the same on its side,
+# route-tall, for phones), and the live maps. Writes src/data/maps.json, which tells LiveMap.astro and the puzzle each
+# map's view and widths.
 # Needs numpy, scipy, scikit-image and Pillow.
+import json
+import os
 import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage
@@ -17,12 +21,12 @@ BG = (24, 26, 30)
 CONTOUR, CONTOUR_STRONG = (36, 42, 40), (50, 58, 54)
 RIVER = (30, 50, 66)
 RAIL = (164, 168, 174)
-# Each map: its place in the drawing's coordinates (x, y, width and height), and pixels per drawing unit. The maps
-# drawn larger on the page get more.
+# Each map: its place in the drawing's coordinates (x, y, width and height), and the widths to save it at. It's drawn
+# once at the largest and scaled down for the rest.
 MAPS = {
-    'public/route.webp': ((0, 0, 1440, 900), 3),
-    'public/map.webp': ((0, 310, 960, 590), 4),
-    'public/map-join.webp': ((680, 220, 760, 340), 4),
+    'route': ((0, 0, 1440, 900), [1440, 2160, 2880, 4320]),  # the whole drawing, behind the opening
+    'map': ((0, 310, 960, 590), [640, 960, 1280, 1920, 2560, 3840]),  # "Watch it run"
+    'join': ((680, 220, 760, 340), [800, 1280, 1920, 2560, 3040]),  # behind the call to join
 }
 # Rivers, drawn by hand through the drawing's coordinates, each passing under the main line, then smoothed and given a
 # little wander. Cold Creek runs past the junction; Kessler Run past Kessler.
@@ -99,9 +103,19 @@ def draw(view, scale):
     cover = rails_at(view, scale)
     return Image.fromarray((terrain * (1 - cover) + np.array(RAIL) * cover).round().astype(np.uint8))
 
-for out, (view, scale) in MAPS.items():
-    img = draw(view, scale)
-    img.save(out, quality=82, method=6)
-    if out == 'public/route.webp':
-        img.rotate(90, expand=True).save('public/route-tall.webp', quality=82, method=6)
-    print(out, img.size)
+os.makedirs('public/maps', exist_ok=True)
+for old in os.listdir('public/maps'):
+    os.remove(os.path.join('public/maps', old))
+manifest = {}
+for name, (view, widths) in MAPS.items():
+    big = draw(view, max(widths) / view[2])
+    for width in widths:
+        img = big if width == big.width else big.resize((width, round(width * view[3] / view[2])), Image.LANCZOS)
+        img.save(f'public/maps/{name}-{width}.webp', quality=85, method=6)
+        if name == 'route':  # on its side too, named by its long side like the rest
+            img.rotate(90, expand=True).save(f'public/maps/route-tall-{width}.webp', quality=85, method=6)
+    manifest[name] = {'view': list(view), 'widths': widths}
+    print(name, widths)
+with open('src/data/maps.json', 'w') as f:
+    json.dump(manifest, f, indent=2)
+    f.write('\n')

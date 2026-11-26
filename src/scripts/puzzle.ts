@@ -3,6 +3,7 @@
 // Phones and short screens: one column of full-width pieces, the gap as tall as the message needs.
 // On load the pieces fly in from around the screen and lock together, the gap's outline appears, and the last piece
 // slides out of it. With reduced motion, it's drawn already put together.
+import maps from '../data/maps.json'
 
 const NS = 'http://www.w3.org/2000/svg'
 type Point = [number, number]
@@ -16,6 +17,14 @@ interface Layout {
   pieces: string[]
   gap: string
   rest: string // where the loose piece comes to rest, as a CSS transform
+}
+
+// The whole route's picture (tools/draw-map.py) at the smallest width that's at least as many pixels as its long side
+// is shown at, so it's sharp without fetching more than it needs. `tall` is the one on its side, for the column.
+function routeImage(tall: boolean, shownPx: number) {
+  const widths = maps.route.widths
+  const width = widths.find((w) => w >= shownPx * devicePixelRatio) ?? widths[widths.length - 1]
+  return `/maps/route${tall ? '-tall' : ''}-${width}.webp`
 }
 
 // One side of a piece from P to Q, with its tab or blank `size` deep.
@@ -33,7 +42,7 @@ function piece(x: number, y: number, w: number, h: number, [top, right, bottom, 
 }
 
 // The 3 x 3 board. Shared edges: 1 bulges toward the higher row or column; around the center all bulge outward.
-function wide(): Layout {
+function wide(hero: HTMLElement): Layout {
   const W = 480, H = 300
   const rows = (r: number, c: number) => (c === 1 ? (r === 0 ? -1 : 1) : (r + c) % 2 ? 1 : -1)
   const cols = (r: number, c: number) => (r === 1 ? (c === 0 ? -1 : 1) : (r + c) % 2 ? -1 : 1)
@@ -43,7 +52,8 @@ function wide(): Layout {
   for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
     if (r !== 1 || c !== 1) pieces.push(piece(c * W, r * H, W, H, sides(r, c), H))
   }
-  return { width: 1440, height: 900, fit: 'slice', image: '/route.webp', pieces, gap: piece(W, H, W, H, sides(1, 1), H), rest: 'translate(560px, 360px) rotate(-9deg)' }
+  const shown = 1440 * Math.max(hero.clientWidth / 1440, hero.clientHeight / 900) // covering the opening
+  return { width: 1440, height: 900, fit: 'slice', image: routeImage(false, shown), pieces, gap: piece(W, H, W, H, sides(1, 1), H), rest: 'translate(560px, 360px) rotate(-9deg)' }
 }
 
 // One column as wide as the opening. Pieces only lock top and bottom; around the gap both bulge outward.
@@ -55,7 +65,7 @@ function column(hero: HTMLElement, message: HTMLElement): Layout {
   for (let k = -Math.ceil(top / H) - 1; top + k * H < height + H; k++) {
     if (k !== 0) pieces.push(piece(0, top + k * H, width, H, [-edge(k - 1), 0, edge(k), 0], tab))
   }
-  return { width, height, fit: 'none', image: '/route-tall.webp', pieces, gap: piece(0, top, width, H, [1, 0, 1, 0], tab), rest: `translate(${Math.round(width * 0.3)}px, ${Math.round(height / 2 + H * 0.15)}px) rotate(-8deg)` }
+  return { width, height, fit: 'none', image: routeImage(true, height), pieces, gap: piece(0, top, width, H, [1, 0, 1, 0], tab), rest: `translate(${Math.round(width * 0.3)}px, ${Math.round(height / 2 + H * 0.15)}px) rotate(-8deg)` }
 }
 
 const ARRIVE_MS = 900 // each piece's flight
@@ -70,7 +80,7 @@ export function startPuzzle(hero: HTMLElement) {
   let first = true
 
   function lay() {
-    const p = narrow.matches ? column(hero, message) : wide()
+    const p = narrow.matches ? column(hero, message) : wide(hero)
     board.setAttribute('viewBox', `0 0 ${p.width} ${p.height}`)
     board.classList.toggle('column', narrow.matches) // the live map's trains, signals and places are only on the wide board
     board.setAttribute('preserveAspectRatio', p.fit === 'slice' ? 'xMidYMid slice' : 'none')

@@ -1,33 +1,46 @@
 ---
-// A live map of part of the route: its background (terrain, a river and the rails, drawn by tools/draw-map.py) with
-// the tracks, trains, signals, switches and places put inside it (the slot), all in the rails drawing's 1440 x 900
-// coordinates. The trains run with src/scripts/trains.ts, and the signals and switches with src/scripts/wayside.ts.
+// A live map of part of the route: its background (terrain, rivers and the rails, drawn by tools/draw-map.py at several
+// widths, so the browser fetches one that suits the screen and shows it sharp), with the tracks, trains, signals,
+// switches and places put inside it (the slot) drawn over it, all in the rails drawing's 1440 x 900 coordinates. The
+// trains run with src/scripts/trains.ts, and the signals and switches with src/scripts/wayside.ts.
+import maps from '../data/maps.json'
+
 interface Props {
-  view: [number, number, number, number] // x, y, width and height in the drawing
-  image: string
+  map: keyof typeof maps // which of tools/draw-map.py's maps
+  sizes: string // how wide it's shown, for picking a width (as for an img)
   label?: string // what it shows, for screen readers; without one it's decoration
   trainScale?: number
   cycle?: number // seconds every train repeats in, so they keep their spacing
   cover?: boolean // fill its box, cropping the edges, rather than fit inside it
 }
-const { view, image, label, trainScale = 1, cycle, cover = false } = Astro.props
-const [x, y, width, height] = view
+const { map, sizes, label, trainScale = 1, cycle, cover = false } = Astro.props
+const { view, widths } = maps[map]
+const src = (width: number) => `/maps/${map}-${width}.webp`
 ---
 
-<svg
-  class="live-map"
-  data-map
-  data-train-scale={trainScale}
-  data-cycle={cycle}
-  viewBox={view.join(' ')}
-  preserveAspectRatio={cover ? 'xMidYMid slice' : 'xMidYMid meet'}
-  role={label ? 'img' : undefined}
-  aria-label={label}
-  aria-hidden={label ? undefined : 'true'}
->
-  <image href={image} x={x} y={y} width={width} height={height} />
-  <slot />
-</svg>
+<div class:list={['live-map', { cover }]}>
+  <img
+    srcset={widths.map((width) => `${src(width)} ${width}w`).join(', ')}
+    sizes={sizes}
+    src={src(widths[Math.floor(widths.length / 2)]!)}
+    width={widths[widths.length - 1]}
+    height={Math.round((widths[widths.length - 1]! * view[3]!) / view[2]!)}
+    alt=""
+    decoding="async"
+  />
+  <svg
+    data-map
+    data-train-scale={trainScale}
+    data-cycle={cycle}
+    viewBox={view.join(' ')}
+    preserveAspectRatio={cover ? 'xMidYMid slice' : 'xMidYMid meet'}
+    role={label ? 'img' : undefined}
+    aria-label={label}
+    aria-hidden={label ? undefined : 'true'}
+  >
+    <slot />
+  </svg>
+</div>
 
 <script>
   import { startTrains } from '../scripts/trains'
@@ -35,5 +48,9 @@ const [x, y, width, height] = view
 </script>
 
 <style>
-  .live-map { display: block; width: 100%; height: 100%; }
+  /* The picture and the drawing over it fill the same box and are fitted (or cropped) the same way, so they line up. */
+  .live-map { position: relative; width: 100%; height: 100%; }
+  img, svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  img { object-fit: contain; }
+  .cover img { object-fit: cover; }
 </style>
