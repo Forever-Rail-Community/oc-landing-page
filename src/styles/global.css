@@ -64,9 +64,9 @@ section.part { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px,
 /* The ground under every map. */
 :root { --map-ground: #181A1E; }
 
-/* The route's terrain (Terrain.astro): contour lines a fixed width on screen at any size, and the rivers, 20%
+/* The route's terrain (Terrain.astro): contour lines a fixed width on screen at any size, and the rivers, 30%
    see-through so the railroad stands out. */
-#terrain { opacity: 0.8; }
+#terrain { opacity: 0.7; }
 .contour { fill: none; stroke: #2A302E; stroke-width: 1; vector-effect: non-scaling-stroke; }
 .contour.strong { stroke: #3B4440; stroke-width: 1.4; }
 .river { fill: none; stroke: #1E3344; stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; }
