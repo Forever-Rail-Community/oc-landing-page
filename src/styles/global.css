@@ -38,3 +38,14 @@ section.part { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px,
 .wrap { max-width: 1120px; margin: 0 auto; }
 .intro { max-width: 640px; display: grid; gap: 14px; margin-bottom: clamp(40px, 6vw, 72px); }
 .intro p { margin: 0; font-size: 18px; line-height: 1.55; color: var(--muted); }
+
+/* Trains on the rails drawing (src/scripts/trains.ts builds them): a glow, the locomotive, its cars and its symbol. */
+.tracks path { fill: none; stroke: none; }
+.train { pointer-events: none; }
+.train .glow { fill: rgba(252, 131, 0, 0.3); filter: blur(10px); }
+.train .loco { fill: var(--orange); stroke: #FFF3D6; stroke-width: 1.4; }
+.train .car { fill: #C06A14; stroke: rgba(15, 17, 21, 0.9); stroke-width: 1; }
+.train .symbol {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.04em; fill: #FFF3D6;
+  paint-order: stroke; stroke: rgba(15, 17, 21, 0.9); stroke-width: 5px; stroke-linejoin: round;
+}

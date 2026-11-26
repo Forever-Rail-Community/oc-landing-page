@@ -72,7 +72,7 @@ export function startPuzzle(hero: HTMLElement) {
   function lay() {
     const p = narrow.matches ? column(hero, message) : wide()
     board.setAttribute('viewBox', `0 0 ${p.width} ${p.height}`)
-    board.classList.toggle('column', narrow.matches) // the train's lights only run on the wide board's drawing
+    board.classList.toggle('column', narrow.matches) // the train only runs on the wide board's drawing
     board.setAttribute('preserveAspectRatio', p.fit === 'slice' ? 'xMidYMid slice' : 'none')
     const pattern = board.querySelector('#rails')!, image = pattern.querySelector('image')!
     for (const el of [pattern, image]) { el.setAttribute('width', String(p.width)); el.setAttribute('height', String(p.height)) }

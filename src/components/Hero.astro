@@ -12,12 +12,10 @@ import { DISCORD_URL } from '../data/site'
     </defs>
     <g class="pieces"></g>
     <rect class="dim" fill="#0F1115" fill-opacity="0.3"></rect>
-    <!-- A train's lights running down the main line once the puzzle is together (wide screens; the drawing's own
-         coordinates). pathLength makes the dashes a share of the run. -->
-    <g class="streak">
-      <path pathLength="1000" class="cars" d="M1440 262 L1400 285 L1320 318 L1240 348 L1160 377 L1080 407 L1000 435 L600 573 L480 610 L398 640 L322 660 L255 700 L179 760 L115 820 L74 880 L64 900" />
-      <path pathLength="1000" class="light" d="M1440 262 L1400 285 L1320 318 L1240 348 L1160 377 L1080 407 L1000 435 L600 573 L480 610 L398 640 L322 660 L255 700 L179 760 L115 820 L74 880 L64 900" />
-    </g>
+    <!-- A train running the main line once the puzzle is together (wide screens, in the drawing's own coordinates;
+         src/scripts/trains.ts). -->
+    <g class="tracks"><path id="hero-line" d="M1470 240 L1438.2 256.5 L1394.0 279.9 L1373.9 288.8 L1361.3 295.0 L1333.6 306.4 L1241.7 340.4 L1000.0 428.0 L653.3 554.6 L644.1 558.5 L627.0 564.1 L577.3 582.4 L568.7 585.0 L553.8 590.9 L533.0 598.0 L524.6 601.4 L300.0 683.1 L261.6 697.5 L239.8 707.6 L216.1 720.6 L203.5 728.6 L185.5 741.3 L163.7 758.9 L151.2 770.4 L135.2 786.9 L118.9 805.9 L97.9 835.1 L85.1 858.8 L66.0 898.5" /></g>
+    <g class="train" data-track="hero-line" data-symbol="WB 214" data-cars="6" data-speed="70" data-stops="0.2" data-dwell="4" data-offset="-3"></g>
     <path class="gap"></path>
     <g class="loose"><path class="seam" fill="url(#rails)" stroke-opacity="0.25"></path></g>
   </svg>
@@ -33,7 +31,10 @@ import { DISCORD_URL } from '../data/site'
 
 <script>
   import { startPuzzle } from '../scripts/puzzle'
-  startPuzzle(document.querySelector<HTMLElement>('.hero')!)
+  import { startTrains } from '../scripts/trains'
+  const hero = document.querySelector<HTMLElement>('.hero')!
+  startPuzzle(hero)
+  startTrains(hero.querySelector<SVGSVGElement>('.board')!)
 </script>
 
 <style>
@@ -58,20 +59,9 @@ import { DISCORD_URL } from '../data/site'
   }
   .board.settled .loose { transform: var(--rest); }
 
-  /* The train's lights: its cars a stretch of orange with the headlight at the front, running the main line, then a
-     pause before the next. */
-  .streak { display: none; pointer-events: none; }
-  .board.settled:not(.column) .streak { display: block; }
-  .streak path { fill: none; stroke-linecap: round; }
-  .streak .cars { stroke: var(--orange); stroke-width: 7; stroke-dasharray: 70 2000; stroke-dashoffset: 70; filter: drop-shadow(0 0 10px rgba(252, 131, 0, 0.8)); }
-  .streak .light { stroke: #FFF3D6; stroke-width: 9; stroke-dasharray: 2 2000; stroke-dashoffset: 2; filter: drop-shadow(0 0 12px #FFD9A0); }
-  @media (prefers-reduced-motion: no-preference) {
-    .board.settled .streak .cars { animation: run-cars 16s linear infinite; animation-delay: calc(var(--assembled-ms) + 1800ms); }
-    .board.settled .streak .light { animation: run-light 16s linear infinite; animation-delay: calc(var(--assembled-ms) + 1800ms); }
-  }
-  @media (prefers-reduced-motion: reduce) { .streak { display: none !important; } }
-  @keyframes run-cars { from { stroke-dashoffset: 70; } 55%, to { stroke-dashoffset: -1000; } }
-  @keyframes run-light { from { stroke-dashoffset: 2; } 55%, to { stroke-dashoffset: -1068; } } /* kept at the front of the cars */
+  /* The train only runs on the wide board, once it's together. */
+  .board:not(.settled) .train, .board.column .train { display: none; }
+  @media (prefers-reduced-motion: reduce) { .board .train { display: none; } }
 
   /* The gap is 480 of the drawing's 1440 x 900, scaled to cover the opening, so max(33.3vw, 53.3svh) wide. */
   .message {

@@ -27,6 +27,8 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
 - `src/scripts/motion.ts`: page-wide motion on [Motion](https://motion.dev): the reading line under the top bar, the
   "What's inside" parts and closing call coming in, the pictures lifting when pointed at, and buttons giving under a
   press.
+- `tools/trace-rail.py`: traces one rail of the drawing into an SVG path, for the trains' tracks in `MapShot.astro`
+  and `Hero.astro`.
 - `src/data/arrivals.ts`: what's on the arrivals board and when each is due (early 2027, spring 2027, later).
 - `src/data/site.ts`: the links (Discord, server status) and the description used in previews.
 - `public/`: images. `track.webp` and `track-tall.webp` are the rails drawn from the dashboard's map data (no names,
