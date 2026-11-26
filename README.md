@@ -27,6 +27,9 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
 - `src/scripts/motion.ts`: page-wide motion on [Motion](https://motion.dev): the reading line under the top bar, the
   "What's inside" parts, the closing call and its icon coming in, the pictures lifting when pointed at, and buttons giving under a
   press.
+- `tools/draw-map.py`: draws `public/map.webp`, the made-up terrain and river under the rails in the "Watch it run"
+  picture. `tools/find-switches.py` finds where the rails branch, for the picture's switches.
+- `src/scripts/wayside.ts`: the picture's signals and switches, which answer to the trains.
 - `tools/trace-rail.py`: traces one rail of the drawing into an SVG path, for the trains' tracks in `MapShot.astro`
   and `Hero.astro`.
 - `src/data/arrivals.ts`: what's on the arrivals board and when each is due (at launch, next update, future).

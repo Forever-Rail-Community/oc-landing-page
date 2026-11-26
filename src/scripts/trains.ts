@@ -4,9 +4,11 @@
 // again at the start after a while. It's drawn like a locomotive on a live map: a glow, the locomotive, and its cars
 // behind, each turned to follow the curve, with the train's symbol beside it. A picture can draw them larger
 // (data-train-scale on its svg), and give its trains one cycle (data-cycle) so they keep the same spacing.
+// Signals and switches along their tracks answer to them (src/scripts/wayside.ts).
 // Paused while off screen; with reduced motion, the trains stand at their stations.
+import { startWayside } from './wayside'
 
-const SVG = 'http://www.w3.org/2000/svg'
+export const SVG = 'http://www.w3.org/2000/svg'
 const FADE = 0.05 // of the run, at each end
 const OFF_S = 4 // between leaving the picture and appearing again
 const LOCO = { length: 16, width: 7 }
@@ -14,7 +16,7 @@ const CAR = { length: 11, width: 5.5 }
 const GAP = 2.5 // between cars
 
 interface Leg { from: number; to: number; start: number; end: number } // along the track, 0 to 1, and when
-interface Train {
+export interface Train {
   g: SVGGElement
   track: SVGPathElement
   length: number
@@ -27,6 +29,12 @@ interface Train {
   vehicles: { el: SVGRectElement; back: number }[] // how far the middle of each sits behind the front of the train
   scale: number
   below: boolean // its symbol goes under it, clear of trains passing the other way
+  // Where it is now, for the signals and switches: its front and rear as distances along its run, whether it's in the
+  // picture, and how long it has left to wait if it's stopped at a station.
+  front: number
+  rear: number
+  shown: boolean
+  waiting: number
 }
 
 // Smooth starts and stops.
@@ -44,17 +52,18 @@ function schedule(length: number, speed: number, stops: number[], dwell: number,
   return { legs, cycle: Math.max(cycle, time + OFF_S) }
 }
 
-// Where along its track a train is at time t into its cycle, 0 to 1 (1 means it's gone off the picture).
-function along(train: Train, t: number) {
+// Where along its track a train is at time t into its cycle, 0 to 1 (1 means it's gone off the picture), and how long
+// it has left to wait if it's stopped at a station.
+function along(train: Train, t: number): { at: number; waiting: number } {
   const now = ((t % train.cycle) + train.cycle) % train.cycle
   for (const leg of train.legs) {
-    if (now < leg.start) return leg.from // waiting at a station
-    if (now <= leg.end) return leg.from + (leg.to - leg.from) * ease((now - leg.start) / (leg.end - leg.start))
+    if (now < leg.start) return { at: leg.from, waiting: leg.start - now }
+    if (now <= leg.end) return { at: leg.from + (leg.to - leg.from) * ease((now - leg.start) / (leg.end - leg.start)), waiting: 0 }
   }
-  return 1
+  return { at: 1, waiting: 0 }
 }
 
-function make<K extends keyof SVGElementTagNameMap>(name: K, attrs: Record<string, string | number>, parent: Element) {
+export function make<K extends keyof SVGElementTagNameMap>(name: K, attrs: Record<string, string | number>, parent: Element) {
   const el = document.createElementNS(SVG, name)
   for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, String(value))
   parent.append(el)
@@ -82,14 +91,19 @@ function build(shot: SVGSVGElement, g: SVGGElement, scale: number): Train {
     below: g.dataset.label === 'below',
     reverse: g.dataset.reverse === 'true',
     offset: Number(g.dataset.offset ?? 0),
+    front: 0, rear: 0, shown: false, waiting: 0,
     ...schedule(length, Number(g.dataset.speed), stops, Number(g.dataset.dwell ?? 4), Number(shot.dataset.cycle ?? 0))
   }
 }
 
-function draw(train: Train, at: number) {
+function draw(train: Train, at: number, waiting = 0) {
   // `at` runs 0 to 1 in the direction of travel; the front of the train is that far along.
   const way = train.reverse ? -1 : 1
   const front = (train.reverse ? 1 - at : at) * train.length
+  train.front = at * train.length
+  train.rear = train.front - train.vehicles[train.vehicles.length - 1]!.back - CAR.length * train.scale / 2
+  train.shown = at < 1
+  train.waiting = waiting
   const point = (s: number) => train.track.getPointAtLength(Math.min(train.length, Math.max(0, s)))
   for (const { el, back } of train.vehicles) {
     const s = front - way * back
@@ -109,9 +123,11 @@ function draw(train: Train, at: number) {
 export function startTrains(shot: SVGSVGElement) {
   const scale = Number(shot.dataset.trainScale ?? 1)
   const trains = [...shot.querySelectorAll<SVGGElement>('.train[data-track]')].map((g) => build(shot, g, scale))
+  const wayside = startWayside(shot, trains, scale)
 
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
     trains.forEach((train) => draw(train, train.legs[0]!.to))
+    wayside()
     return
   }
   let frame = 0
@@ -119,7 +135,11 @@ export function startTrains(shot: SVGSVGElement) {
   const tick = (now: number) => {
     started ||= now
     const t = (now - started) / 1000
-    trains.forEach((train) => draw(train, along(train, t + train.offset)))
+    trains.forEach((train) => {
+      const { at, waiting } = along(train, t + train.offset)
+      draw(train, at, waiting)
+    })
+    wayside()
     frame = requestAnimationFrame(tick)
   }
   new IntersectionObserver(([entry]) => {

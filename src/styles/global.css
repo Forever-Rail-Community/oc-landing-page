@@ -49,3 +49,12 @@ section.part { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px,
   font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.04em; fill: #FFF3D6;
   paint-order: stroke; stroke: rgba(15, 17, 21, 0.9); stroke-width: 5px; stroke-linejoin: round;
 }
+
+/* Signals and switches beside the trains' tracks (src/scripts/wayside.ts). */
+.signal .mast { stroke: #6B7280; stroke-width: 1.5; }
+.signal .head { fill: #22C55E; stroke: rgba(15, 17, 21, 0.9); stroke-width: 1.5; transition: fill 200ms; }
+.signal .head[data-aspect='approach'] { fill: #FACC15; }
+.signal .head[data-aspect='stop'] { fill: #EF4444; }
+.switches .point { fill: #0F1115; stroke: #9CA3AF; stroke-width: 1.2; transition: stroke 200ms; }
+.switches .point.on { stroke: #22C55E; }
+.switches .lined { fill: none; stroke: #22C55E; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; }
