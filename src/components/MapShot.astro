@@ -1,0 +1,34 @@
+---
+// The "Watch it run" picture: the yard and junction from the rails drawing, with trains moving along it
+// (src/scripts/trains.ts). Paths are traced over the drawing in its 1440 x 900 coordinates; the view is its bottom
+// left, where the most track is.
+---
+
+<div class="shot">
+  <svg data-map viewBox="0 310 960 590" role="img" aria-label="The live map: the rails, with trains moving along them in orange">
+    <image href="/track.webp" x="0" y="0" width="1440" height="900" />
+    <path id="main-line" d="M1000 428 L600 573 L480 610 L398 640 L322 660 L255 700 L179 760 L115 820 L74 880 L64 900" fill="none" />
+    <path id="branch" d="M560 583 L479 640 L460 660 L446 680 L436 700 L428 720 L423 740 L421 770 L424 800 L431 820 L439 840 L446 860 L454 880 L462 900" fill="none" />
+    <g data-train="main-line" data-speed="46" data-at="0.15" class="train"><circle r="13" class="halo" /><circle r="6" /></g>
+    <g data-train="main-line" data-speed="34" data-at="0.62" data-reverse="true" class="train"><circle r="13" class="halo" /><circle r="6" /></g>
+    <g data-train="branch" data-speed="28" data-at="0.4" class="train"><circle r="13" class="halo" /><circle r="6" /></g>
+  </svg>
+  <span class="status"><b></b>All servers up</span>
+</div>
+
+<script>
+  import { startTrains } from '../scripts/trains'
+  document.querySelectorAll<SVGSVGElement>("svg[data-map]").forEach(startTrains)
+</script>
+
+<style>
+  .shot { position: relative; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #0B0D10; aspect-ratio: 960 / 590; }
+  svg { display: block; width: 100%; height: 100%; }
+  .train { fill: var(--orange); }
+  .halo { fill: var(--orange); opacity: 0.22; }
+  .status {
+    position: absolute; left: 16px; top: 16px; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px;
+    font-size: 13px; background: rgba(15, 17, 21, 0.88); border: 1px solid var(--line); color: var(--muted);
+  }
+  .status b { width: 8px; height: 8px; border-radius: 50%; background: #22C55E; }
+</style>

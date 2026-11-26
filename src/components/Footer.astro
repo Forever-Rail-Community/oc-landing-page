@@ -1,0 +1,19 @@
+---
+import { DISCORD_URL, STATUS_URL } from '../data/site'
+---
+
+<footer>
+  <img src="/logo.png" width="82" height="28" alt="Forever Rail" />
+  <nav aria-label="Forever Rail links">
+    <a href={DISCORD_URL}>Discord</a>
+    <a href={STATUS_URL}>Server status</a>
+  </nav>
+</footer>
+
+<style>
+  footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 28px clamp(20px, 5vw, 64px); border-top: 1px solid var(--line); color: var(--faint); font-size: 14px; }
+  img { height: 28px; width: auto; display: block; }
+  nav { display: flex; gap: 20px; }
+  a { text-decoration: none; }
+  a:hover { color: var(--text); }
+</style>

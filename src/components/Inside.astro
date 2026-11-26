@@ -1,0 +1,31 @@
+---
+// What's inside: the three parts of the Operations Center, each with a picture of it.
+import Feature from './Feature.astro'
+import MapShot from './MapShot.astro'
+import BoardShot from './BoardShot.astro'
+import RoadmapShot from './RoadmapShot.astro'
+---
+
+<section class="part" id="inside" aria-labelledby="inside-title">
+  <div class="wrap">
+    <div class="intro">
+      <h2 id="inside-title">Everything the railroad runs on, in one place</h2>
+      <p>The Operations Center brings the servers, the map and the dispatcher's board together in your browser. Sign in with Discord and it's all there.</p>
+    </div>
+
+    <Feature title="Watch it run" points={['A live map, refreshed every few seconds', 'Server status at a glance', 'Where each train has been']}>
+      See the whole railroad at once, with every train where it is right now, and know which servers are up before you join.
+      <MapShot slot="shot" />
+    </Feature>
+
+    <Feature title="Dispatch it together" flip points={['Signals, switches and trains, live', 'A desk for each dispatcher', 'Turnover notes when you hand over']}>
+      A CTC board that runs in your browser and talks to the game. Clear signals and line switches, and split the line into desks so several dispatchers can work it at once.
+      <BoardShot slot="shot" />
+    </Feature>
+
+    <Feature title="Shape what comes next" points={['Feature requests and bug reports', 'A roadmap you can follow', 'A help center for getting started']}>
+      Ask for what you'd like to see, report what's broken, and follow both on the roadmap as they're built. Help articles and release notes live here too.
+      <RoadmapShot slot="shot" />
+    </Feature>
+  </div>
+</section>

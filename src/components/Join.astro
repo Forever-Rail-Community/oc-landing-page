@@ -1,0 +1,23 @@
+---
+// The way in, at the end of the page.
+import { DISCORD_URL, STATUS_URL } from '../data/site'
+---
+
+<section class="part join" aria-labelledby="join-title">
+  <div class="wrap">
+    <h2 id="join-title">Be there when it opens</h2>
+    <p>The Operations Center is for Forever Rail Community members, and you'll sign in with Discord. Join the server now, and you're ready for opening day.</p>
+    <div class="buttons">
+      <a class="button primary" href={DISCORD_URL}>Join the Discord</a>
+      <a class="button" href={STATUS_URL}>Server status</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .join { text-align: center; overflow: hidden; }
+  .join::before { content: ''; position: absolute; inset: 0; background: url('/track.webp') center / cover no-repeat; opacity: 0.22; }
+  .join::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(15, 17, 21, 0.6), var(--ground) 72%); }
+  .wrap { position: relative; z-index: 1; max-width: 680px; display: grid; justify-items: center; gap: 18px; }
+  p { margin: 0; font-size: 18px; line-height: 1.55; color: var(--muted); }
+</style>

@@ -1,18 +1,39 @@
-# oc.foreverrail.com: parked page
+# oc.foreverrail.com: landing page
 
-A placeholder for the Forever Rail Operations Center until it moves to this domain. One static page, no build step:
-Vercel serves the folder as it is.
+What the Forever Rail Operations Center is and what's coming, until the Operations Center itself moves to this domain.
+An [Astro](https://astro.build) site in TypeScript, built to plain HTML with only the scripts its animations need.
 
-- `index.html`: the page. The script at the bottom cuts the background into a jigsaw whose center piece slides out of
-  its gap on load; the message sits in the gap. Wide screens get a 3 × 3 board; phones and short screens get one
-  column of full-width pieces, with the gap as tall as the message needs.
-- `track.webp`, `track-tall.webp`: the background for wide screens and for phones. Rails only, drawn from the
-  dashboard's map data (no names, trains or signals); the tall one is the same drawing turned on its side.
-- `logo.png`, `favicon.png`, `apple-touch-icon.png`: from the Forever Rail logos.
-- `og.png`: the preview Discord and other sites show when the link is shared.
+```sh
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # checks the TypeScript, then writes the site to dist/
+```
 
-To change the wording, edit `index.html` (the `<main>` element, plus the description meta tags at the top).
-Retake `og.png` if the look changes, since previews show it.
+Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`); fonts and styles end up in `dist/assets/`.
+
+## Where things are
+
+- `src/pages/index.astro`: the page, made of the parts in `src/components/`:
+  - `Hero.astro`, with `src/scripts/puzzle.ts`: the opening. The rails drawing is cut into a jigsaw; on load the pieces
+    fly in and lock together, then the last piece slides out of its gap, where the message sits. Wide screens get a
+    3 × 3 board; phones and short screens get one column of full-width pieces.
+  - `Inside.astro`: what's inside, three parts (`Feature.astro`) each with a picture:
+    - `MapShot.astro`, with `src/scripts/trains.ts`: trains moving along paths traced over the rails drawing.
+    - `BoardShot.astro`, with `src/scripts/board.ts`: a small CTC board playing a dispatcher at work on a loop.
+    - `RoadmapShot.astro`: a few roadmap items.
+  - `Route.astro`: coming down the line, a route map that lights up as it scrolls into view.
+  - `TopBar.astro`, `Join.astro`, `Footer.astro`.
+- `src/data/route.ts`: the pieces on the route map and how far along each is. Moving one along is a one-word change.
+- `src/data/site.ts`: the links (Discord, server status) and the description used in previews.
+- `public/`: images. `track.webp` and `track-tall.webp` are the rails drawn from the dashboard's map data (no names,
+  trains or signals), wide and on its side. `logo.png`, `favicon.png` and `apple-touch-icon.png` are from the Forever
+  Rail logos. `og.png` is the preview Discord and other sites show; retake it (1200 × 630) when the opening's look
+  changes.
+
+The page never names the games. Its pictures use made-up names (Mill Gap, EB 12).
+
+Every animation stops for people who ask their system for reduced motion, and the map and board pause while off
+screen.
 
 When the Operations Center is ready for this domain, move `oc.foreverrail.com` from this project to the dashboard's
 project in Vercel (Settings > Domains).
