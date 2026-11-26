@@ -1,0 +1,21 @@
+{
+  "name": "oc-landing-page",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/jost": "^5.3.0",
+    "astro": "^7.4.13",
+    "motion": "^14.14.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "^5.6.0"
+  }
+}

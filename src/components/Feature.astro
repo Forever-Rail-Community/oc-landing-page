@@ -1,0 +1,36 @@
+---
+// One part of "What's inside": its words beside its picture (the `shot` slot), the picture first on every other one.
+interface Props {
+  title: string
+  points: string[]
+  flip?: boolean
+}
+const { title, points, flip = false } = Astro.props
+---
+
+<article class:list={['feature', { flip }]}>
+  <div>
+    <h3>{title}</h3>
+    <p><slot /></p>
+    <ul>{points.map((point) => <li>{point}</li>)}</ul>
+  </div>
+  <slot name="shot" />
+</article>
+
+<style>
+  .feature { display: grid; grid-template-columns: 5fr 6fr; gap: clamp(28px, 5vw, 72px); align-items: center; padding: 40px 0; border-top: 1px solid var(--line); }
+  .feature.flip { grid-template-columns: 6fr 5fr; }
+  .feature.flip > div { order: 1; }
+  h3 { font-size: 26px; line-height: 1.15; margin-bottom: 12px; }
+  p { margin: 0 0 16px; font-size: 17px; line-height: 1.6; color: var(--muted); max-width: 52ch; }
+  ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  li { position: relative; padding-left: 20px; font-size: 16px; }
+  li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 8px; height: 8px; border-radius: 2px; background: var(--orange); }
+  /* The pictures catch the light when pointed at (the lift is in src/scripts/motion.ts). */
+  .feature :global(.shot) { transition: box-shadow 300ms ease, border-color 300ms ease; }
+  .feature:hover :global(.shot) { border-color: rgba(252, 131, 0, 0.45); box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(252, 131, 0, 0.15); }
+  @media (max-width: 760px) {
+    .feature, .feature.flip { grid-template-columns: 1fr; }
+    .feature.flip > div { order: 0; }
+  }
+</style>

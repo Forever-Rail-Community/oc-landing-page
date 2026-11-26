@@ -1,0 +1,39 @@
+---
+// A live map of part of the route: its background (terrain, a river and the rails, drawn by tools/draw-map.py) with
+// the tracks, trains, signals, switches and places put inside it (the slot), all in the rails drawing's 1440 x 900
+// coordinates. The trains run with src/scripts/trains.ts, and the signals and switches with src/scripts/wayside.ts.
+interface Props {
+  view: [number, number, number, number] // x, y, width and height in the drawing
+  image: string
+  label?: string // what it shows, for screen readers; without one it's decoration
+  trainScale?: number
+  cycle?: number // seconds every train repeats in, so they keep their spacing
+  cover?: boolean // fill its box, cropping the edges, rather than fit inside it
+}
+const { view, image, label, trainScale = 1, cycle, cover = false } = Astro.props
+const [x, y, width, height] = view
+---
+
+<svg
+  class="live-map"
+  data-map
+  data-train-scale={trainScale}
+  data-cycle={cycle}
+  viewBox={view.join(' ')}
+  preserveAspectRatio={cover ? 'xMidYMid slice' : 'xMidYMid meet'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+>
+  <image href={image} x={x} y={y} width={width} height={height} />
+  <slot />
+</svg>
+
+<script>
+  import { startTrains } from '../scripts/trains'
+  document.querySelectorAll<SVGSVGElement>('svg[data-map]').forEach(startTrains)
+</script>
+
+<style>
+  .live-map { display: block; width: 100%; height: 100%; }
+</style>

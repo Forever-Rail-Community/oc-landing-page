@@ -1,0 +1,64 @@
+/* What every part of the page shares: colors, type, buttons and section spacing. */
+@import '@fontsource/barlow/400.css';
+@import '@fontsource/barlow/500.css';
+@import '@fontsource/barlow/600.css';
+@import '@fontsource/barlow-condensed/500.css';
+@import '@fontsource/barlow-condensed/700.css';
+@import '@fontsource/jost/500.css';
+@import '@fontsource/jost/600.css';
+
+:root {
+  --ground: #0F1115;
+  --surface: #161920;
+  --text: #EDEEF0;
+  --muted: #B4BAC4;
+  --faint: #9AA1AD;
+  --line: #3A3F49;
+  --orange: #FC8300; /* Forever Rail Dark Orange */
+}
+html { background: var(--ground); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--ground); color: var(--text); font-family: Barlow, system-ui, sans-serif; overflow-x: hidden; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+h1, h2, h3 { font-family: Jost, sans-serif; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(30px, 3.6vw, 44px); line-height: 1.1; }
+
+.button {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 10px;
+  border: 1px solid var(--line); color: var(--text); font-weight: 500; font-size: 15px; text-decoration: none;
+}
+.button:hover { border-color: var(--faint); }
+.button.primary { padding: 0 18px; border-color: var(--text); background: var(--text); color: var(--ground); font-weight: 600; }
+.button.primary:hover { background: #FFFFFF; }
+.buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+section.part { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px, 5vw, 64px); }
+.wrap { max-width: 1120px; margin: 0 auto; }
+.intro { max-width: 640px; display: grid; gap: 14px; margin-bottom: clamp(40px, 6vw, 72px); }
+.intro p { margin: 0; font-size: 18px; line-height: 1.55; color: var(--muted); }
+
+/* Trains on the rails drawing (src/scripts/trains.ts builds them): a glow, the locomotive, its cars and its symbol. */
+.tracks path { fill: none; stroke: none; }
+.train { pointer-events: none; }
+.train .glow { fill: rgba(252, 131, 0, 0.3); filter: blur(10px); }
+.train .loco { fill: var(--orange); stroke: #FFF3D6; stroke-width: 1.4; }
+.train .car { fill: #C06A14; stroke: rgba(15, 17, 21, 0.9); stroke-width: 1; }
+.train .symbol {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.04em; fill: #FFF3D6;
+  paint-order: stroke; stroke: rgba(15, 17, 21, 0.9); stroke-width: 5px; stroke-linejoin: round;
+}
+
+/* Signals and switches beside the trains' tracks (src/scripts/wayside.ts). */
+.signal .mast { stroke: #6B7280; stroke-width: 1.5; }
+.signal .head { fill: #22C55E; stroke: rgba(15, 17, 21, 0.9); stroke-width: 1.5; transition: fill 200ms; }
+.signal .head[data-aspect='approach'] { fill: #FACC15; }
+.signal .head[data-aspect='stop'] { fill: #EF4444; }
+.switches .point { fill: #0F1115; stroke: #9CA3AF; stroke-width: 1.2; transition: stroke 200ms; }
+.switches .point.on { stroke: #22C55E; }
+.switches .lined { fill: none; stroke: #22C55E; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; }
+
+/* Place names on a live map. */
+.places text { font: 600 15px 'Barlow Condensed', sans-serif; letter-spacing: 0.18em; fill: #8B93A1; paint-order: stroke; stroke: #181A1E; stroke-width: 5px; }
+.places .water { font: italic 500 14px Barlow, sans-serif; letter-spacing: 0.04em; fill: #4E7590; }

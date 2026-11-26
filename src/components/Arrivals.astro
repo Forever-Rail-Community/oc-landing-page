@@ -1,0 +1,56 @@
+---
+// What's next, as a station's arrivals board (src/data/arrivals.ts): what's arriving, what it brings, and when it's
+// due. The lettering flips into place as the board scrolls into view (src/scripts/flaps.ts).
+import { ARRIVALS, DUE_LABEL } from '../data/arrivals'
+---
+
+<section class="part next" id="next" aria-labelledby="next-title">
+  <div class="wrap">
+    <div class="intro">
+      <h2 id="next-title">What to expect in the Operations Center</h2>
+      <p>What's on the way, and which update brings it. A few surprises are staying under wraps until the official release.</p>
+    </div>
+    <div class="board" data-board-arrivals>
+      <div class="head" aria-hidden="true"><span>Arriving</span><span>What it brings</span><span>Due</span></div>
+      <ul>
+        {ARRIVALS.map((a) => (
+          <li data-row class={a.due}>
+            <b data-flap={a.name.toUpperCase()}>{a.name.toUpperCase()}</b>
+            <span class="does">{a.does}</span>
+            <span class="due" data-flap={DUE_LABEL[a.due].toUpperCase()}>{DUE_LABEL[a.due].toUpperCase()}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { startFlaps } from '../scripts/flaps'
+  document.querySelectorAll<HTMLElement>('[data-board-arrivals]').forEach(startFlaps)
+</script>
+
+<style>
+  .next { background: var(--surface); border-block: 1px solid var(--line); }
+  .board { border: 1px solid #2A2E36; border-radius: 14px; background: #08090B; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04); }
+  .head, li { display: grid; grid-template-columns: minmax(220px, 2fr) 3fr minmax(140px, 1fr); gap: 24px; align-items: center; padding: 0 24px; }
+  .head { padding-block: 12px; border-bottom: 1px solid #2A2E36; color: var(--faint); font-size: 13px; font-weight: 600; }
+  .head span:last-child, .due { text-align: right; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  li { min-height: 60px; border-bottom: 1px solid #1A1D23; }
+  li:last-child { border-bottom: 0; }
+  /* The lettering, set like a split-flap board: condensed capitals in fixed-width cells. */
+  b, .due { font-family: 'Barlow Condensed', Barlow, sans-serif; font-weight: 700; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  b { font-size: 21px; color: #F4F4F5; }
+  .does { font-size: 16px; color: var(--muted); }
+  .due { font-size: 18px; color: var(--orange); }
+  .soon .due { color: #FDBA74; }
+  .later .due { color: var(--faint); }
+  @media (max-width: 760px) {
+    .head { display: none; }
+    li { grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px 18px; align-items: baseline; }
+    .does { grid-column: 1 / -1; grid-row: 2; font-size: 15px; }
+    b { font-size: 19px; white-space: normal; }
+    .due { font-size: 15px; }
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+// The way in, which ends the page: the Operations Center's icon over the call to join, with a live map of another
+// stretch of the route behind it, east of the yard, where two trains meet on the double track.
+import { DISCORD_URL, STATUS_URL } from '../data/site'
+import LiveMap from './LiveMap.astro'
+---
+
+<section class="part join" aria-labelledby="join-title">
+  <div class="map">
+    <LiveMap view={[680, 220, 760, 340]} image="/map-join.webp" trainScale={0.85} cycle={40} cover>
+      <g class="places">
+        <text x="905" y="392">HOLLIS</text>
+        <text x="1262" y="262">KESSLER</text>
+        <text class="water" x="1296" y="432" transform="rotate(57 1296 432)">Kessler Run</text>
+      </g>
+      <!-- The double track (tools/trace-rail.py), a train each way, and their signals and switches. -->
+      <g class="tracks">
+        <path id="join-north" d="M1438.4 256.4 L1404.0 274.8 L1376.9 287.6 L1334.5 299.3 L1199.1 348.6 L1188.6 351.8 L1145.4 360.2 L1128.6 362.6 L1109.0 366.6 L1102.1 367.3 L1098.2 368.0 L1077.6 372.0 L1052.9 380.1 L793.5 474.7 L772.4 486.1 L760.7 493.7 L746.6 501.3 L726.2 513.9 L690.2 533.6 L640.0 561.0" />
+        <path id="join-south" d="M1438.8 264.5 L1412.2 278.4 L1390.6 288.9 L1349.4 306.9 L1238.0 348.9 L1117.7 392.6 L1100.0 399.5 L690.1 548.2 L674.8 552.8 L645.3 558.3" />
+      </g>
+      <g class="switches" data-points="1366,291 1350,294 1182,354 1138,362 1101,368 1067,374 1030,381 866,440 933,461 811,462 800,471 741,483 769,490 735,509 702,529"></g>
+      <g class="signal" data-track="join-north" data-at="0.1" data-side="above"></g>
+      <g class="signal" data-track="join-north" data-at="0.265" data-side="above"></g>
+      <g class="signal" data-track="join-north" data-at="0.7" data-side="above"></g>
+      <g class="signal" data-track="join-south" data-at="0.3" data-side="below"></g>
+      <g class="signal" data-track="join-south" data-at="0.765" data-side="below"></g>
+      <g class="signal" data-track="join-south" data-at="0.9" data-side="below"></g>
+      <!-- Both stop out on the right, clear of the words. -->
+      <g class="train" data-track="join-north" data-symbol="WB 88" data-cars="6" data-speed="40" data-stops="0.25" data-dwell="5"></g>
+      <g class="train" data-track="join-south" data-symbol="EB 405" data-cars="5" data-speed="36" data-stops="0.75" data-dwell="5" data-reverse="true" data-label="below" data-offset="14"></g>
+    </LiveMap>
+  </div>
+  <div class="wrap">
+    <img class="icon" src="/apple-touch-icon.png" width="72" height="72" alt="Forever Rail Operations Center" />
+    <h2 id="join-title">Be there when it's available</h2>
+    <p>The Operations Center is just for Forever Rail Community members, and you'll sign in with Discord. Not a member yet? Join today and you'll be ready on release day!</p>
+    <div class="buttons">
+      <a class="button primary" href={DISCORD_URL}>Join the Discord</a>
+      <a class="button" href={STATUS_URL}>Server status</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .join { text-align: center; overflow: hidden; }
+  .map { position: absolute; inset: 0; opacity: 0.75; }
+  /* The map is drawn larger here, so its lettering is set smaller to match the rest. */
+  .map :global(.places text) { font-size: 9px; }
+  .map :global(.train .symbol) { font-size: 10px; stroke-width: 3px; }
+  @media (max-width: 760px) {
+    .map { opacity: 0.45; }
+    .map :global(.train .symbol), .map :global(.places) { display: none; }
+  }
+  /* Darker in the middle, so the words stay easy to read over the map. */
+  .join::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 42% 60% at center, rgba(15, 17, 21, 0.88), rgba(15, 17, 21, 0.35) 100%), linear-gradient(var(--ground), transparent 18%, transparent 82%, var(--ground)); }
+  .wrap { position: relative; z-index: 1; max-width: 680px; display: grid; justify-items: center; gap: 18px; }
+  .icon { width: 72px; height: 72px; border-radius: 18px; display: block; margin-bottom: 6px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45); }
+  p { margin: 0; font-size: 18px; line-height: 1.55; color: var(--muted); }
+</style>

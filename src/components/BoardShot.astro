@@ -1,0 +1,52 @@
+---
+// The "Dispatch it together" picture: a small CTC board in the real board's look, playing a dispatcher at work
+// (src/scripts/board.ts). The town and train are made up.
+---
+
+<div class="shot">
+  <svg data-board viewBox="0 0 520 320" role="img" aria-label="The CTC board: a command clears a signal, the route lights green, and a train runs through into the next desk">
+    <rect width="520" height="320" fill="#050505" />
+    <text x="24" y="36" class="title">MILL GAP TO HOLLIS</text>
+    <text x="496" y="36" class="who" text-anchor="end">DISPATCHER YOU</text>
+    <line x1="0" y1="52" x2="520" y2="52" stroke="#2A2A2A" />
+    <text x="190" y="84" class="mp" text-anchor="middle">MP 12.4</text>
+    <text x="190" y="104" class="town" text-anchor="middle">MILL GAP</text>
+    <path d="M140 200 L170 150 H210 L240 200" stroke="#525252" stroke-width="6" fill="none" />
+    <path data-part="block-a" d="M20 200 H246" stroke="#EF4444" stroke-width="6" />
+    <path data-part="block-b" d="M254 200 H396" stroke="#525252" stroke-width="6" />
+    <path data-part="block-c" d="M404 200 H520" stroke="#525252" stroke-width="6" />
+    <path data-part="signal" d="M236 222 h12 m0 -6 l10 6 -10 6 z" fill="#EF4444" stroke="#EF4444" stroke-width="2" />
+    <g data-part="train">
+      <rect x="-46" y="164" width="92" height="24" fill="#000" stroke="#EF4444" />
+      <path d="M28 170 v12 l8 -6 z" fill="#7DD3FC" />
+      <text x="-4" y="181" class="tag" text-anchor="middle">EB 12</text>
+    </g>
+    <line x1="400" y1="52" x2="400" y2="320" stroke="#525252" stroke-dasharray="5 5" />
+    <rect x="400" y="52" width="120" height="268" fill="#000" opacity="0.45" />
+    <rect x="20" y="246" width="370" height="28" fill="#0A0A0A" stroke="#404040" />
+    <text x="30" y="265" class="cmd">CMD</text>
+    <text data-part="typed" x="66" y="265" class="typed"></text>
+    <text data-part="state" x="380" y="265" class="state" text-anchor="end"></text>
+    <text x="24" y="306" class="desk mine">DESK 2, YOU</text>
+    <text x="408" y="306" class="desk">DESK 3, OPEN</text>
+  </svg>
+</div>
+
+<script>
+  import { startBoard } from '../scripts/board'
+  document.querySelectorAll<SVGSVGElement>('svg[data-board]').forEach(startBoard)
+</script>
+
+<style>
+  .shot { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #050505; aspect-ratio: 13 / 8; }
+  svg { display: block; width: 100%; height: 100%; font-family: 'Barlow Condensed', Barlow, sans-serif; }
+  .title { fill: #FAFAFA; font-size: 20px; font-weight: 700; }
+  .who, .mp { fill: #A3A3A3; font-size: 14px; }
+  .town { fill: #FAFAFA; font-size: 18px; font-weight: 700; }
+  .tag { fill: #7DD3FC; font-size: 16px; font-weight: 700; }
+  .cmd { fill: #38BDF8; font-size: 14px; font-weight: 700; }
+  .typed { fill: #FAFAFA; font-size: 15px; font-weight: 500; letter-spacing: 0.04em; }
+  .state { font-size: 14px; font-weight: 700; }
+  .desk { fill: #737373; font-size: 13px; font-weight: 700; }
+  .desk.mine { fill: #7DD3FC; }
+</style>
