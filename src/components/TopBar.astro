@@ -15,14 +15,9 @@ import { DISCORD_URL } from '../data/site'
 </header>
 
 <script>
-  // Solid once scrolled, with a line along its foot that fills as you read down the page.
+  // Solid once scrolled. (The line along its foot is filled by src/scripts/motion.ts.)
   const bar = document.querySelector<HTMLElement>('.top')!
-  const progress = bar.querySelector<HTMLElement>('.progress')!
-  const mark = () => {
-    bar.classList.toggle('scrolled', scrollY > 8)
-    const room = document.documentElement.scrollHeight - innerHeight
-    progress.style.transform = `scaleX(${room > 0 ? Math.min(1, scrollY / room) : 0})`
-  }
+  const mark = () => bar.classList.toggle('scrolled', scrollY > 8)
   addEventListener('scroll', mark, { passive: true })
   mark()
 </script>
