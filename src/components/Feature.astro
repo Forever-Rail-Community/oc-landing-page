@@ -26,6 +26,12 @@ const { title, points, flip = false } = Astro.props
   ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
   li { position: relative; padding-left: 20px; font-size: 16px; }
   li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 8px; height: 8px; border-radius: 2px; background: var(--orange); }
+  /* The pictures lift a little and catch the light when pointed at. */
+  .feature :global(.shot) { transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease; }
+  .feature:hover :global(.shot) { border-color: rgba(252, 131, 0, 0.45); box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(252, 131, 0, 0.15); }
+  @media (prefers-reduced-motion: no-preference) {
+    .feature:hover :global(.shot) { transform: translateY(-4px); }
+  }
   @media (max-width: 760px) {
     .feature, .feature.flip { grid-template-columns: 1fr; }
     .feature.flip > div { order: 0; }

@@ -12,6 +12,12 @@ import { DISCORD_URL } from '../data/site'
     </defs>
     <g class="pieces"></g>
     <rect class="dim" fill="#0F1115" fill-opacity="0.3"></rect>
+    <!-- A train's lights running down the main line once the puzzle is together (wide screens; the drawing's own
+         coordinates). pathLength makes the dashes a share of the run. -->
+    <g class="streak">
+      <path pathLength="1000" class="cars" d="M1440 262 L1400 285 L1320 318 L1240 348 L1160 377 L1080 407 L1000 435 L600 573 L480 610 L398 640 L322 660 L255 700 L179 760 L115 820 L74 880 L64 900" />
+      <path pathLength="1000" class="light" d="M1440 262 L1400 285 L1320 318 L1240 348 L1160 377 L1080 407 L1000 435 L600 573 L480 610 L398 640 L322 660 L255 700 L179 760 L115 820 L74 880 L64 900" />
+    </g>
     <path class="gap"></path>
     <g class="loose"><path class="seam" fill="url(#rails)" stroke-opacity="0.25"></path></g>
   </svg>
@@ -51,6 +57,21 @@ import { DISCORD_URL } from '../data/site'
     filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.6));
   }
   .board.settled .loose { transform: var(--rest); }
+
+  /* The train's lights: its cars a stretch of orange with the headlight at the front, running the main line, then a
+     pause before the next. */
+  .streak { display: none; pointer-events: none; }
+  .board.settled:not(.column) .streak { display: block; }
+  .streak path { fill: none; stroke-linecap: round; }
+  .streak .cars { stroke: var(--orange); stroke-width: 7; stroke-dasharray: 70 2000; stroke-dashoffset: 70; filter: drop-shadow(0 0 10px rgba(252, 131, 0, 0.8)); }
+  .streak .light { stroke: #FFF3D6; stroke-width: 9; stroke-dasharray: 2 2000; stroke-dashoffset: 2; filter: drop-shadow(0 0 12px #FFD9A0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .board.settled .streak .cars { animation: run-cars 16s linear infinite; animation-delay: calc(var(--assembled-ms) + 1800ms); }
+    .board.settled .streak .light { animation: run-light 16s linear infinite; animation-delay: calc(var(--assembled-ms) + 1800ms); }
+  }
+  @media (prefers-reduced-motion: reduce) { .streak { display: none !important; } }
+  @keyframes run-cars { from { stroke-dashoffset: 70; } 55%, to { stroke-dashoffset: -1000; } }
+  @keyframes run-light { from { stroke-dashoffset: 2; } 55%, to { stroke-dashoffset: -1068; } } /* kept at the front of the cars */
 
   /* The gap is 480 of the drawing's 1440 x 900, scaled to cover the opening, so max(33.3vw, 53.3svh) wide. */
   .message {

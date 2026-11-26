@@ -11,11 +11,18 @@ import { DISCORD_URL } from '../data/site'
     <a href="#next">What's next</a>
     <a class="button primary" href={DISCORD_URL}>Join the Discord</a>
   </nav>
+  <i class="progress" aria-hidden="true"></i>
 </header>
 
 <script>
+  // Solid once scrolled, with a line along its foot that fills as you read down the page.
   const bar = document.querySelector<HTMLElement>('.top')!
-  const mark = () => bar.classList.toggle('scrolled', scrollY > 8)
+  const progress = bar.querySelector<HTMLElement>('.progress')!
+  const mark = () => {
+    bar.classList.toggle('scrolled', scrollY > 8)
+    const room = document.documentElement.scrollHeight - innerHeight
+    progress.style.transform = `scaleX(${room > 0 ? Math.min(1, scrollY / room) : 0})`
+  }
   addEventListener('scroll', mark, { passive: true })
   mark()
 </script>
@@ -25,6 +32,11 @@ import { DISCORD_URL } from '../data/site'
     position: fixed; inset: 0 0 auto; z-index: 3; display: flex; align-items: center; gap: 16px;
     padding: 20px clamp(20px, 3vw, 40px); border-bottom: 1px solid transparent; transition: background 200ms, border-color 200ms;
   }
+  .progress {
+    position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--orange); transform-origin: left; transform: scaleX(0);
+    opacity: 0; transition: opacity 200ms; box-shadow: 0 0 8px rgba(252, 131, 0, 0.7);
+  }
+  .top.scrolled .progress { opacity: 1; }
   .top.scrolled { background: rgba(15, 17, 21, 0.86); backdrop-filter: blur(8px); border-color: var(--line); padding-block: 12px; }
   img { display: block; height: 40px; width: auto; }
   .name { padding-left: 16px; border-left: 1px solid var(--line); font-family: Jost, sans-serif; font-weight: 500; font-size: 17px; color: var(--faint); }

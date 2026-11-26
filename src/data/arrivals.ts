@@ -3,8 +3,8 @@
 export type Due = 'opening' | 'soon' | 'later'
 
 export const DUE_LABEL: Record<Due, string> = {
-  opening: 'Opening day',
-  soon: 'Soon after',
+  opening: 'Early 2027',
+  soon: 'Spring 2027',
   later: 'Later'
 }
 

@@ -24,7 +24,7 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
   - `Arrivals.astro`, with `src/scripts/flaps.ts`: what's next, as a split-flap arrivals board whose lettering flips
     into place as it scrolls into view. It says when each thing is due, never how far along it is.
   - `TopBar.astro`, `Join.astro`, `Footer.astro`.
-- `src/data/arrivals.ts`: what's on the arrivals board and when each is due (opening day, soon after, later).
+- `src/data/arrivals.ts`: what's on the arrivals board and when each is due (early 2027, spring 2027, later).
 - `src/data/site.ts`: the links (Discord, server status) and the description used in previews.
 - `public/`: images. `track.webp` and `track-tall.webp` are the rails drawn from the dashboard's map data (no names,
   trains or signals), wide and on its side. `logo.png`, `favicon.png` and `apple-touch-icon.png` are from the Forever

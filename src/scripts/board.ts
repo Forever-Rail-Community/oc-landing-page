@@ -1,9 +1,11 @@
 // The "Dispatch it together" picture plays a dispatcher at work, over and over: a command is typed, the game
 // confirms it, the signal clears and the route lights green, and the train runs through the cleared block into the
-// next desk. Everything is worked out from the time into the loop, so it can't drift. Paused while off screen; with
+// next desk. Like a real CTC display, the train's position only updates every STEP_S, so it moves in short hops, not
+// smoothly. Everything is worked out from the time into the loop, so it can't drift. Paused while off screen; with
 // reduced motion, it shows the moment the route is cleared.
 
-const LOOP_S = 10
+const LOOP_S = 13
+const STEP_S = 0.5 // how often the display hears where the train is
 const COMMAND = 'CLR MG-E'
 const ROUTE = { start: 90, signal: 250, desk: 400, end: 500 } // x along the main line
 
@@ -11,12 +13,18 @@ const IDLE = '#525252'
 const OCCUPIED = '#EF4444'
 const CLEARED = '#22C55E'
 
-// Where the train is at time t: waiting, then through the cleared block, then on into the next desk.
-const trainX = (t: number) =>
-  t < 3 ? ROUTE.start
-    : t < 6.5 ? ROUTE.start + ((t - 3) / 3.5) * (ROUTE.desk - 30 - ROUTE.start)
-      : t < 8.5 ? ROUTE.desk - 30 + ((t - 6.5) / 2) * (ROUTE.end - ROUTE.desk + 30)
+// Where the train is at time t, as the display last heard: waiting, then through the cleared block, then on into the
+// next desk.
+const LEAVES = 3.2
+const AT_DESK = 8.2
+const GONE = 10.6
+function trainX(time: number) {
+  const t = Math.floor(time / STEP_S) * STEP_S
+  return t < LEAVES ? ROUTE.start
+    : t < AT_DESK ? ROUTE.start + ((t - LEAVES) / (AT_DESK - LEAVES)) * (ROUTE.desk - 30 - ROUTE.start)
+      : t < GONE ? ROUTE.desk - 30 + ((t - AT_DESK) / (GONE - AT_DESK)) * (ROUTE.end - ROUTE.desk + 30)
         : ROUTE.end
+}
 
 export function startBoard(svg: SVGSVGElement) {
   const $ = <T extends Element>(name: string) => svg.querySelector<T>(`[data-part="${name}"]`)!
@@ -33,9 +41,9 @@ export function startBoard(svg: SVGSVGElement) {
     signal.setAttribute('fill', cleared ? CLEARED : OCCUPIED)
     signal.setAttribute('stroke', cleared ? CLEARED : OCCUPIED)
     train.setAttribute('transform', `translate(${x.toFixed(1)} 0)`)
-    train.style.opacity = String(t > 8.5 ? Math.max(0, 1 - (t - 8.5) / 0.6) : t < 0.4 ? t / 0.4 : 1)
+    train.style.opacity = String(t > GONE ? Math.max(0, 1 - (t - GONE) / 0.6) : t < 0.4 ? t / 0.4 : 1)
     typed.textContent = COMMAND.slice(0, Math.max(0, Math.floor((t - 0.6) / 0.09)))
-    state.textContent = t < 1.5 ? '' : t < 2.4 ? 'SENT' : t < 8.5 ? 'CONFIRMED' : ''
+    state.textContent = t < 1.5 ? '' : t < 2.4 ? 'SENT' : t < GONE ? 'CONFIRMED' : ''
     state.setAttribute('fill', t < 2.4 ? '#D4D4D4' : '#4ADE80')
   }
 
