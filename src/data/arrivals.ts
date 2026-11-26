@@ -3,9 +3,9 @@
 export type Due = 'opening' | 'soon' | 'later'
 
 export const DUE_LABEL: Record<Due, string> = {
-  opening: 'Early 2027',
-  soon: 'Spring 2027',
-  later: 'Later'
+  opening: 'At Launch',
+  soon: 'Next Update',
+  later: 'Future'
 }
 
 export interface Arrival {
@@ -21,6 +21,8 @@ export const ARRIVALS: Arrival[] = [
   { name: 'Dispatch desks', does: 'Split the line so a whole crew can dispatch it together.', due: 'opening' },
   { name: 'Roadmap and requests', does: "Ask for what you want, then watch it get built.", due: 'opening' },
   { name: 'Shift changes', does: "Ask for a desk, or cover a neighbor's.", due: 'soon' },
-  { name: 'More on the board', does: 'More of the railroad, right where the dispatcher needs it.', due: 'later' },
+  { name: 'More on the board', does: 'More of the railroad, right where the dispatcher needs it.', due: 'soon' },
   { name: 'Something on the radio', does: "That's all we're saying.", due: 'later' }
+  { name: 'Run8 Support', does: "It's going to be worth the wait!", due: 'later' }
+  { name: 'Railroader Support', does: "*smiles big*", due: 'later' }
 ]
