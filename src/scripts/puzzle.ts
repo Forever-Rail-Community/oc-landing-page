@@ -43,7 +43,7 @@ function wide(): Layout {
   for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
     if (r !== 1 || c !== 1) pieces.push(piece(c * W, r * H, W, H, sides(r, c), H))
   }
-  return { width: 1440, height: 900, fit: 'slice', image: '/track.webp', pieces, gap: piece(W, H, W, H, sides(1, 1), H), rest: 'translate(560px, 360px) rotate(-9deg)' }
+  return { width: 1440, height: 900, fit: 'slice', image: '/route.webp', pieces, gap: piece(W, H, W, H, sides(1, 1), H), rest: 'translate(560px, 360px) rotate(-9deg)' }
 }
 
 // One column as wide as the opening. Pieces only lock top and bottom; around the gap both bulge outward.
@@ -55,7 +55,7 @@ function column(hero: HTMLElement, message: HTMLElement): Layout {
   for (let k = -Math.ceil(top / H) - 1; top + k * H < height + H; k++) {
     if (k !== 0) pieces.push(piece(0, top + k * H, width, H, [-edge(k - 1), 0, edge(k), 0], tab))
   }
-  return { width, height, fit: 'none', image: '/track-tall.webp', pieces, gap: piece(0, top, width, H, [1, 0, 1, 0], tab), rest: `translate(${Math.round(width * 0.3)}px, ${Math.round(height / 2 + H * 0.15)}px) rotate(-8deg)` }
+  return { width, height, fit: 'none', image: '/route-tall.webp', pieces, gap: piece(0, top, width, H, [1, 0, 1, 0], tab), rest: `translate(${Math.round(width * 0.3)}px, ${Math.round(height / 2 + H * 0.15)}px) rotate(-8deg)` }
 }
 
 const ARRIVE_MS = 900 // each piece's flight
@@ -72,7 +72,7 @@ export function startPuzzle(hero: HTMLElement) {
   function lay() {
     const p = narrow.matches ? column(hero, message) : wide()
     board.setAttribute('viewBox', `0 0 ${p.width} ${p.height}`)
-    board.classList.toggle('column', narrow.matches) // the train only runs on the wide board's drawing
+    board.classList.toggle('column', narrow.matches) // the live map's trains, signals and places are only on the wide board
     board.setAttribute('preserveAspectRatio', p.fit === 'slice' ? 'xMidYMid slice' : 'none')
     const pattern = board.querySelector('#rails')!, image = pattern.querySelector('image')!
     for (const el of [pattern, image]) { el.setAttribute('width', String(p.width)); el.setAttribute('height', String(p.height)) }

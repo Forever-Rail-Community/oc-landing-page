@@ -27,16 +27,17 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
 - `src/scripts/motion.ts`: page-wide motion on [Motion](https://motion.dev): the reading line under the top bar, the
   "What's inside" parts, the closing call and its icon coming in, the pictures lifting when pointed at, and buttons giving under a
   press.
-- `tools/draw-map.py`: draws a live map's background: the made-up terrain and river under the rails, for the "Watch it
-  run" picture (`public/map.webp`) and behind the call to join (`public/map-join.webp`). `tools/find-switches.py` finds where the rails branch, for the picture's switches.
+- `tools/draw-map.py`: draws the made-up terrain and rivers under the rails, once for the whole route, and cuts each
+  live map's background from it. `tools/find-switches.py` finds where the rails branch, for the picture's switches.
 - `src/components/LiveMap.astro`: a live map of part of the route, used by the picture and the call to join.
 - `src/scripts/wayside.ts`: the live maps' signals and switches, which answer to the trains.
 - `tools/trace-rail.py`: traces one rail of the drawing into an SVG path, for the trains' tracks in `MapShot.astro`
   and `Hero.astro`.
 - `src/data/arrivals.ts`: what's on the arrivals board and when each is due (at launch, next update, future).
 - `src/data/site.ts`: the links (Discord, server status) and the description used in previews.
-- `public/`: images. `track.webp` and `track-tall.webp` are the rails drawn from the dashboard's map data (no names,
-  trains or signals), wide and on its side. `logo.png`, `favicon.png` and `apple-touch-icon.png` are from the Forever
+- `public/`: images. `track.webp` is the rails drawn from the dashboard's map data (no names, trains or
+  signals). `tools/draw-map.py` draws terrain and rivers under them: `route.webp` (the whole route, behind the
+  opening), `route-tall.webp` (the same on its side, for phones), `map.webp` and `map-join.webp`. `logo.png`, `favicon.png` and `apple-touch-icon.png` are from the Forever
   Rail logos. `og.png` is the preview Discord and other sites show; retake it (1200 × 630) when the opening's look
   changes.
 
