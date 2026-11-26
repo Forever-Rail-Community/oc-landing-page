@@ -1,8 +1,8 @@
 ---
-// A live map of part of the route: its background (terrain, rivers and the rails, drawn by tools/draw-map.py at several
-// widths, so the browser fetches one that suits the screen and shows it sharp), with the tracks, trains, signals,
-// switches and places put inside it (the slot) drawn over it, all in the rails drawing's 1440 x 900 coordinates. The
-// trains run with src/scripts/trains.ts, and the signals and switches with src/scripts/wayside.ts.
+// A live map of part of the route, in layers that are all fitted to its box the same way, so they line up: the terrain
+// (Terrain.astro, drawn as lines), the rails (a picture from tools/draw-map.py, at the width that suits the screen),
+// and the tracks, trains, signals, switches and places put inside it (the slot), all in the rails drawing's 1440 x 900
+// coordinates. The trains run with src/scripts/trains.ts, and the signals and switches with src/scripts/wayside.ts.
 import maps from '../data/maps.json'
 
 interface Props {
@@ -15,10 +15,12 @@ interface Props {
 }
 const { map, sizes, label, trainScale = 1, cycle, cover = false } = Astro.props
 const { view, widths } = maps[map]
-const src = (width: number) => `/maps/${map}-${width}.webp`
+const src = (width: number) => `/maps/rails-${map}-${width}.webp`
+const fit = cover ? 'xMidYMid slice' : 'xMidYMid meet'
 ---
 
 <div class:list={['live-map', { cover }]}>
+  <svg viewBox={view.join(' ')} preserveAspectRatio={fit} aria-hidden="true"><use href="#terrain" /></svg>
   <img
     srcset={widths.map((width) => `${src(width)} ${width}w`).join(', ')}
     sizes={sizes}
@@ -33,7 +35,7 @@ const src = (width: number) => `/maps/${map}-${width}.webp`
     data-train-scale={trainScale}
     data-cycle={cycle}
     viewBox={view.join(' ')}
-    preserveAspectRatio={cover ? 'xMidYMid slice' : 'xMidYMid meet'}
+    preserveAspectRatio={fit}
     role={label ? 'img' : undefined}
     aria-label={label}
     aria-hidden={label ? undefined : 'true'}
@@ -49,7 +51,7 @@ const src = (width: number) => `/maps/${map}-${width}.webp`
 
 <style>
   /* The picture and the drawing over it fill the same box and are fitted (or cropped) the same way, so they line up. */
-  .live-map { position: relative; width: 100%; height: 100%; }
+  .live-map { position: relative; width: 100%; height: 100%; background: var(--map-ground); }
   img, svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
   img { object-fit: contain; }
   .cover img { object-fit: cover; }

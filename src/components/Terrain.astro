@@ -1,0 +1,19 @@
+---
+// The route's terrain, defined once for the page: the contour lines and rivers from tools/draw-map.py, in the rails
+// drawing's 1440 x 900 coordinates. Maps show it with <use href="#terrain">. Lines are drawn as lines, so they stay
+// sharp at any size, and the contour lines keep their width however far a map is scaled.
+import terrain from '../data/terrain.json'
+---
+
+<svg class="defs" aria-hidden="true">
+  <defs>
+    <g id="terrain">
+      {terrain.contours.map(({ strong, d }) => <path class:list={['contour', { strong }]} d={d} />)}
+      {terrain.rivers.map((d) => <path class="river" d={d} />)}
+    </g>
+  </defs>
+</svg>
+
+<style>
+  .defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+</style>

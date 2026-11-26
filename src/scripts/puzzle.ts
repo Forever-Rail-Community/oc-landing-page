@@ -19,12 +19,21 @@ interface Layout {
   rest: string // where the loose piece comes to rest, as a CSS transform
 }
 
-// The whole route's picture (tools/draw-map.py) at the smallest width that's at least as many pixels as its long side
-// is shown at, so it's sharp without fetching more than it needs. `tall` is the one on its side, for the column.
+// The whole route's rails (tools/draw-map.py) at the smallest width that's at least as many pixels as its long side
+// is shown at, so they're sharp without fetching more than needed. `tall` is the one on its side, for the column.
 function routeImage(tall: boolean, shownPx: number) {
   const widths = maps.route.widths
   const width = widths.find((w) => w >= shownPx * devicePixelRatio) ?? widths[widths.length - 1]
-  return `/maps/route${tall ? '-tall' : ''}-${width}.webp`
+  return `/maps/rails-route${tall ? '-tall' : ''}-${width}.webp`
+}
+
+// Fits the terrain (drawn in the 1440 x 900 drawing) to the board the way the rails picture is fitted: as it is on the
+// wide board, or on its side and cropped to fill the column, like the tall picture.
+function terrainFit(p: Layout) {
+  if (p.fit === 'slice') return ''
+  const s = Math.max(p.width / 900, p.height / 1440)
+  const dx = (p.width - 900 * s) / 2, dy = (p.height - 1440 * s) / 2
+  return `matrix(0 ${-s} ${s} 0 ${dx.toFixed(1)} ${(dy + 1440 * s).toFixed(1)})`
 }
 
 // One side of a piece from P to Q, with its tab or blank `size` deep.
@@ -85,7 +94,8 @@ export function startPuzzle(hero: HTMLElement) {
     board.classList.toggle('column', narrow.matches) // the live map's trains, signals and places are only on the wide board
     board.setAttribute('preserveAspectRatio', p.fit === 'slice' ? 'xMidYMid slice' : 'none')
     const pattern = board.querySelector('#rails')!, image = pattern.querySelector('image')!
-    for (const el of [pattern, image]) { el.setAttribute('width', String(p.width)); el.setAttribute('height', String(p.height)) }
+    for (const el of [pattern, image, pattern.querySelector('.ground')!]) { el.setAttribute('width', String(p.width)); el.setAttribute('height', String(p.height)) }
+    pattern.querySelector('.fit')!.setAttribute('transform', terrainFit(p))
     image.setAttribute('href', p.image)
     const dim = board.querySelector('.dim')!
     dim.setAttribute('width', String(p.width)); dim.setAttribute('height', String(p.height))

@@ -1,12 +1,18 @@
 ---
 // The opening: the jigsaw (src/scripts/puzzle.ts) with the message in its gap.
 import DiscordButton from './DiscordButton.astro'
+import Terrain from './Terrain.astro'
 ---
 
 <section class="hero">
+  <Terrain />
   <svg class="board" aria-hidden="true">
     <defs>
+      <!-- What the pieces are cut from: the ground, the terrain (Terrain.astro) and the rails (tools/draw-map.py),
+           fitted to the board by src/scripts/puzzle.ts. -->
       <pattern id="rails" patternUnits="userSpaceOnUse" x="0" y="0">
+        <rect class="ground" fill="var(--map-ground)"></rect>
+        <g class="fit"><use href="#terrain" /></g>
         <image preserveAspectRatio="xMidYMid slice"></image>
       </pattern>
     </defs>
