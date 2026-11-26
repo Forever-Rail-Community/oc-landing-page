@@ -1,25 +1,34 @@
-# Draws public/map.webp, the "Watch it run" picture's background: made-up terrain (contour lines, with the railroad
-# running along the valley floors), a river, and the rails from public/track.webp over them. Covers the picture's view
-# of the drawing (x 0 to 960, y 310 to 900), at twice that size. Fixed seed, so it draws the same every time.
-#   python3 tools/draw-map.py
+# Draws a live map's background: made-up terrain (contour lines, with the railroad running along the valley floors), a
+# river, and the rails from public/track.webp over them, for one view of the drawing, at twice its size. Each view has
+# its own fixed seed, so it draws the same every time.
+#   python3 tools/draw-map.py map    -> public/map.webp, the "Watch it run" picture
+#   python3 tools/draw-map.py join   -> public/map-join.webp, behind the call to join
 # Needs numpy, scipy, scikit-image and Pillow.
+import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 from scipy import ndimage
 from skimage import measure
 
-X0, Y0, W, H = 0, 310, 960, 590  # the view, in the drawing's coordinates
+# Each view: its place in the drawing's coordinates (x, y, width, height), the file it makes, a seed, and its river,
+# drawn by hand in the view's own coordinates (in from one edge, under the main line, out another) and smoothed.
+VIEWS = {
+    'map': dict(view=(0, 310, 960, 590), out='public/map.webp', seed=31,
+                river=[(560, -10), (610, 90), (668, 170), (700, 240), (742, 320), (790, 400), (812, 480), (850, 600)]),
+    'join': dict(view=(680, 220, 760, 340), out='public/map-join.webp', seed=7,
+                 river=[(470, -10), (520, 60), (560, 120), (590, 170), (640, 240), (700, 350)]),
+}
+config = VIEWS[sys.argv[1]]
+X0, Y0, W, H = config['view']
 S = 2  # pixels per drawing unit
 BG = (24, 26, 30)
-rng = np.random.default_rng(31)
+rng = np.random.default_rng(config['seed'])
 
 rails = Image.open('public/track.webp').convert('RGB').crop((X0 * S, Y0 * S, (X0 + W) * S, (Y0 + H) * S))
 gray = np.asarray(rails.convert('L'), dtype=float)
 on_rail = gray > np.median(gray) + 40
 
-# A river, drawn by hand through the view's coordinates: in from the top, under the main line, and out to the bottom
-# right, with a little wander. Smoothed through its points.
-RIVER = [(560, -10), (610, 90), (668, 170), (700, 240), (742, 320), (790, 400), (812, 480), (850, 600)]
+# The river, with a little wander.
 def smooth(points, per=40):
     p = np.array(points, dtype=float)
     p = np.vstack([p[0], p, p[-1]])
@@ -31,7 +40,7 @@ def smooth(points, per=40):
                               + (-p[i - 1] + 3 * p[i] - 3 * p[i + 1] + p[i + 2]) * t3))
     out.append(p[-2])
     return np.array(out)
-river = smooth(RIVER)
+river = smooth(config['river'])
 river += np.stack([ndimage.gaussian_filter1d(rng.standard_normal(len(river)), 12) * 30, np.zeros(len(river))], axis=1)
 river *= S
 river_mask = Image.new('L', (int(W * S), int(H * S)), 0)
@@ -63,5 +72,5 @@ img = img.filter(ImageFilter.GaussianBlur(0.6))
 
 # The rails over the terrain.
 out = Image.fromarray(np.maximum(np.asarray(img), np.asarray(rails)))
-out.save('public/map.webp', quality=88, method=6)
-print('public/map.webp', out.size)
+out.save(config['out'], quality=88, method=6)
+print(config['out'], out.size)

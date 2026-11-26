@@ -58,3 +58,7 @@ section.part { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px,
 .switches .point { fill: #0F1115; stroke: #9CA3AF; stroke-width: 1.2; transition: stroke 200ms; }
 .switches .point.on { stroke: #22C55E; }
 .switches .lined { fill: none; stroke: #22C55E; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; }
+
+/* Place names on a live map. */
+.places text { font: 600 15px 'Barlow Condensed', sans-serif; letter-spacing: 0.18em; fill: #8B93A1; paint-order: stroke; stroke: #181A1E; stroke-width: 5px; }
+.places .water { font: italic 500 14px Barlow, sans-serif; letter-spacing: 0.04em; fill: #4E7590; }

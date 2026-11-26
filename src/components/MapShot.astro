@@ -1,13 +1,11 @@
 ---
-// The "Watch it run" picture: the yard and junction from the rails drawing, over made-up terrain and a river
-// (public/map.webp, drawn by tools/draw-map.py), with trains running on it (src/scripts/trains.ts) and signals and
-// switches answering to them (src/scripts/wayside.ts). Everything is in the drawing's 1440 x 900 coordinates; the view
-// is its bottom left, where the most track is.
+// The "Watch it run" picture: a live map of the yard and junction, the drawing's bottom left, where the most track is.
+import LiveMap from './LiveMap.astro'
 ---
 
 <div class="shot">
-  <svg data-map data-train-scale="1.4" data-cycle="54" viewBox="0 310 960 590" role="img" aria-label="The live map: the rails over the hills and a river, with trains running along them in orange, and signals and switches changing as they pass">
-    <image href="/map.webp" x="0" y="310" width="960" height="590" />
+  <LiveMap view={[0, 310, 960, 590]} image="/map.webp" trainScale={1.4} cycle={54}
+    label="The live map: the rails over the hills and a river, with trains running along them in orange, and signals and switches changing as they pass">
     <!-- Places, all made up. -->
     <g class="places">
       <text x="182" y="602">MILL GAP</text>
@@ -39,20 +37,12 @@
     <g class="train" data-track="main-line" data-symbol="WB 214" data-cars="5" data-speed="46" data-stops="0.6" data-dwell="5"></g>
     <g class="train" data-track="yard-lead" data-symbol="EB 12" data-cars="4" data-speed="38" data-stops="0.5" data-dwell="4" data-reverse="true" data-label="below" data-offset="12"></g>
     <g class="train" data-track="branch" data-symbol="L 31" data-cars="3" data-speed="30" data-stops="0.5" data-dwell="6" data-offset="-20"></g>
-  </svg>
+  </LiveMap>
   <span class="status"><b></b>All servers up</span>
 </div>
 
-<script>
-  import { startTrains } from '../scripts/trains'
-  document.querySelectorAll<SVGSVGElement>('svg[data-map]').forEach(startTrains)
-</script>
-
 <style>
   .shot { position: relative; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #0B0D10; aspect-ratio: 960 / 590; }
-  svg { display: block; width: 100%; height: 100%; }
-  .places text { font: 600 15px 'Barlow Condensed', sans-serif; letter-spacing: 0.18em; fill: #8B93A1; paint-order: stroke; stroke: #181A1E; stroke-width: 5px; }
-  .places .water { font: italic 500 14px Barlow, sans-serif; letter-spacing: 0.04em; fill: #4E7590; }
   .status {
     position: absolute; left: 16px; top: 16px; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px;
     font-size: 13px; background: rgba(15, 17, 21, 0.88); border: 1px solid var(--line); color: var(--muted);
