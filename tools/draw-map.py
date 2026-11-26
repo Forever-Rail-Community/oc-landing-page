@@ -20,7 +20,7 @@ RAIL = (164, 168, 174)
 # Each map: its place in the drawing's coordinates (x, y, width and height), and pixels per drawing unit. The maps
 # drawn larger on the page get more.
 MAPS = {
-    'public/route.webp': ((0, 0, 1440, 900), 2),
+    'public/route.webp': ((0, 0, 1440, 900), 3),
     'public/map.webp': ((0, 310, 960, 590), 4),
     'public/map-join.webp': ((680, 220, 760, 340), 4),
 }
