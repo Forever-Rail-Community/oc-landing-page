@@ -61,8 +61,8 @@ section.part { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px,
 .places text { font: 600 15px 'Barlow Condensed', sans-serif; letter-spacing: 0.18em; fill: #8B93A1; paint-order: stroke; stroke: #181A1E; stroke-width: 5px; }
 .places .water { font: italic 500 14px Barlow, sans-serif; letter-spacing: 0.04em; fill: #4E7590; }
 
-/* The ground under every map. */
-:root { --map-ground: #181A1E; }
+/* The ground under every map: near-black with a hint of the brand orange. */
+:root { --map-ground: #1E1A17; }
 
 /* The route's terrain (Terrain.astro): contour lines a fixed width on screen at any size, and the rivers, 30%
    see-through so the railroad stands out. */
