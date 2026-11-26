@@ -20,10 +20,11 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
   - `Inside.astro`: what's inside, three parts (`Feature.astro`) each with a picture:
     - `MapShot.astro`, with `src/scripts/trains.ts`: trains moving along paths traced over the rails drawing.
     - `BoardShot.astro`, with `src/scripts/board.ts`: a small CTC board playing a dispatcher at work on a loop.
-    - `RoadmapShot.astro`: a few roadmap items.
-  - `Route.astro`: coming down the line, a route map that lights up as it scrolls into view.
+    - `RoadmapShot.astro`: roadmap items with their names blurred, from requested to done.
+  - `Arrivals.astro`, with `src/scripts/flaps.ts`: what's next, as a split-flap arrivals board whose lettering flips
+    into place as it scrolls into view. It says when each thing is due, never how far along it is.
   - `TopBar.astro`, `Join.astro`, `Footer.astro`.
-- `src/data/route.ts`: the pieces on the route map and how far along each is. Moving one along is a one-word change.
+- `src/data/arrivals.ts`: what's on the arrivals board and when each is due (opening day, soon after, later).
 - `src/data/site.ts`: the links (Discord, server status) and the description used in previews.
 - `public/`: images. `track.webp` and `track-tall.webp` are the rails drawn from the dashboard's map data (no names,
   trains or signals), wide and on its side. `logo.png`, `favicon.png` and `apple-touch-icon.png` are from the Forever

@@ -1,21 +1,22 @@
 ---
-// The "Shape what comes next" picture: a few roadmap items, with where each one stands.
+// The "Shape what comes next" picture: roadmap items moving from a request to done. The names are blurred bars, so
+// the picture shows how the roadmap works without saying what's on it.
 const ITEMS = [
-  { name: 'Dispatch desks', stage: 'In testing', now: true },
-  { name: 'Shift changes', stage: 'Being built', now: true },
-  { name: 'Blocking track on the board', stage: 'Planned', now: false },
-  { name: 'Your idea here', stage: 'Requested', now: false }
+  { width: 62, stage: 'Requested' },
+  { width: 48, stage: 'Planned' },
+  { width: 70, stage: 'In progress', now: true },
+  { width: 54, stage: 'Done' }
 ]
 ---
 
-<div class="shot" role="img" aria-label="The roadmap: features with where each one stands">
-  {ITEMS.map((item) => <div><b>{item.name}</b><span class:list={{ now: item.now }}>{item.stage}</span></div>)}
+<div class="shot" role="img" aria-label="The roadmap: requests moving through planned and in progress to done">
+  {ITEMS.map((item) => <div><i style={`width: ${item.width}%`}></i><span class:list={{ now: item.now }}>{item.stage}</span></div>)}
 </div>
 
 <style>
   .shot { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 22px; display: grid; align-content: center; gap: 10px; min-height: 280px; }
-  div div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--ground); }
-  b { font-weight: 500; font-size: 16px; }
+  div div { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--ground); }
+  i { height: 12px; border-radius: 6px; background: linear-gradient(90deg, #3A3F49, #2B2F37); filter: blur(0.6px); }
   span { font-size: 13px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--faint); white-space: nowrap; }
   span.now { color: var(--orange); border-color: rgba(252, 131, 0, 0.45); }
 </style>
