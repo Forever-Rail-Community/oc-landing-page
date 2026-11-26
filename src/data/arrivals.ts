@@ -22,7 +22,7 @@ export const ARRIVALS: Arrival[] = [
   { name: 'Roadmap and requests', does: "Ask for what you want, then watch it get built.", due: 'opening' },
   { name: 'Shift changes', does: "Ask for a desk, or cover a neighbor's.", due: 'soon' },
   { name: 'More on the board', does: 'More of the railroad, right where the dispatcher needs it.', due: 'soon' },
-  { name: 'Something on the radio', does: "That's all we're saying.", due: 'later' }
-  { name: 'Run8 Support', does: "It's going to be worth the wait!", due: 'later' }
-  { name: 'Railroader Support', does: "*smiles big*", due: 'later' }
+  { name: 'Something on the radio', does: "That's all we're saying.", due: 'later' },
+  { name: 'Another railroad', does: "It's going to be worth the wait!", due: 'later' },
+  { name: 'Two railroads, one center', does: '*smiles big*', due: 'later' }
 ]

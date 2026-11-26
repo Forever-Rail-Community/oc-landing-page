@@ -29,7 +29,7 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
   press.
 - `tools/trace-rail.py`: traces one rail of the drawing into an SVG path, for the trains' tracks in `MapShot.astro`
   and `Hero.astro`.
-- `src/data/arrivals.ts`: what's on the arrivals board and when each is due (early 2027, spring 2027, later).
+- `src/data/arrivals.ts`: what's on the arrivals board and when each is due (at launch, next update, future).
 - `src/data/site.ts`: the links (Discord, server status) and the description used in previews.
 - `public/`: images. `track.webp` and `track-tall.webp` are the rails drawn from the dashboard's map data (no names,
   trains or signals), wide and on its side. `logo.png`, `favicon.png` and `apple-touch-icon.png` are from the Forever
