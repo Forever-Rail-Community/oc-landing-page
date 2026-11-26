@@ -15,11 +15,11 @@ export interface Arrival {
 }
 
 export const ARRIVALS: Arrival[] = [
-  { name: 'Live map', does: 'The whole railroad, every train where it is right now.', due: 'opening' },
-  { name: 'Server status', does: "Which servers are up, before you join.", due: 'opening' },
-  { name: 'CTC board', does: 'Clear signals and line switches from your browser.', due: 'opening' },
-  { name: 'Dispatch desks', does: 'Split the line so several dispatchers can work it.', due: 'opening' },
-  { name: 'Roadmap and requests', does: "Ask for what you'd like, and follow it as it's built.", due: 'opening' },
+  { name: 'Live map', does: 'The whole railroad, with every train where it is right now.', due: 'opening' },
+  { name: 'Server status', does: 'Know which servers are up before you join.', due: 'opening' },
+  { name: 'CTC board', does: 'Clear signals and line switches, right from your browser.', due: 'opening' },
+  { name: 'Dispatch desks', does: 'Split the line so a whole crew can dispatch it together.', due: 'opening' },
+  { name: 'Roadmap and requests', does: "Ask for what you want, then watch it get built.", due: 'opening' },
   { name: 'Shift changes', does: "Ask for a desk, or cover a neighbor's.", due: 'soon' },
   { name: 'More on the board', does: 'More of the railroad, right where the dispatcher needs it.', due: 'later' },
   { name: 'Something on the radio', does: "That's all we're saying.", due: 'later' }

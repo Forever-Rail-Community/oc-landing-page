@@ -3,4 +3,4 @@ export const DISCORD_URL = 'https://discord.gg/jFVVCJVbuh'
 export const STATUS_URL = 'https://status.foreverrail.com'
 export const TITLE = 'Forever Rail Operations Center'
 export const DESCRIPTION =
-  'A live map, server status and a CTC board you dispatch from together, for Forever Rail Community members. Opening here soon.'
+  'Watch the railroad live, dispatch it together, and help shape what comes next. The Forever Rail Operations Center opens here soon.'
