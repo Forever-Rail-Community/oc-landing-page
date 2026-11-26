@@ -1,10 +1,11 @@
 ---
-// The way in, at the end of the page.
+// The way in, which ends the page: the Operations Center's icon over the call to join.
 import { DISCORD_URL, STATUS_URL } from '../data/site'
 ---
 
 <section class="part join" aria-labelledby="join-title">
   <div class="wrap">
+    <img class="icon" src="/apple-touch-icon.png" width="72" height="72" alt="Forever Rail Operations Center" />
     <h2 id="join-title">Be there when it opens</h2>
     <p>The Operations Center is built for Forever Rail Community members, and you'll sign in with Discord. Join the server today, and you'll be ready to roll on opening day.</p>
     <div class="buttons">
@@ -19,5 +20,6 @@ import { DISCORD_URL, STATUS_URL } from '../data/site'
   .join::before { content: ''; position: absolute; inset: 0; background: url('/track.webp') center / cover no-repeat; opacity: 0.22; }
   .join::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(15, 17, 21, 0.6), var(--ground) 72%); }
   .wrap { position: relative; z-index: 1; max-width: 680px; display: grid; justify-items: center; gap: 18px; }
+  .icon { width: 72px; height: 72px; border-radius: 18px; display: block; margin-bottom: 6px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45); }
   p { margin: 0; font-size: 18px; line-height: 1.55; color: var(--muted); }
 </style>

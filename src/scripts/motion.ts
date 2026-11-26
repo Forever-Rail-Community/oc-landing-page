@@ -1,5 +1,5 @@
 // Page-wide motion, built on Motion (motion.dev): the reading line under the top bar, the "What's inside" parts and
-// the closing call coming in as they reach the screen, the pictures lifting when pointed at, and the buttons giving
+// the closing call and its icon coming in as they reach the screen, the pictures lifting when pointed at, and the buttons giving
 // under a press. Anyone who asks for reduced motion gets the reading line and nothing else.
 import { animate, hover, inView, press, scroll, stagger } from 'motion'
 
@@ -30,8 +30,8 @@ if (!still) {
     })
   })
 
-  // The closing call rises in, heading first.
-  const join = document.querySelectorAll<HTMLElement>('.join .wrap > *')
+  // The closing call rises in, heading first. (Its icon comes in on its own, below.)
+  const join = document.querySelectorAll<HTMLElement>('.join .wrap > :not(.icon)')
   if (join.length) {
     animate(join, { opacity: 0, y: 24 }, { duration: 0 })
     inView('.join', () => {
@@ -39,8 +39,8 @@ if (!still) {
     }, { amount: 0.4 })
   }
 
-  // The footer's icon settles in with a small turn.
-  const icon = document.querySelector<HTMLElement>('footer img')
+  // The icon over the closing call settles in with a small turn, just ahead of the words.
+  const icon = document.querySelector<HTMLElement>('.join .icon')
   if (icon) {
     animate(icon, { opacity: 0, scale: 0.6, rotate: -20 }, { duration: 0 })
     inView(icon, () => { animate(icon, { opacity: 1, scale: 1, rotate: 0 }, { type: 'spring', stiffness: 200, damping: 12 }) })

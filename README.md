@@ -23,9 +23,9 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
     - `RoadmapShot.astro`: roadmap items with their names blurred, from requested to done.
   - `Arrivals.astro`, with `src/scripts/flaps.ts`: what's next, as a split-flap arrivals board whose lettering flips
     into place as it scrolls into view. It says when each thing is due, never how far along it is.
-  - `TopBar.astro`, `Join.astro`, `Footer.astro`.
+  - `TopBar.astro`, and `Join.astro`, which ends the page.
 - `src/scripts/motion.ts`: page-wide motion on [Motion](https://motion.dev): the reading line under the top bar, the
-  "What's inside" parts and closing call coming in, the pictures lifting when pointed at, and buttons giving under a
+  "What's inside" parts, the closing call and its icon coming in, the pictures lifting when pointed at, and buttons giving under a
   press.
 - `tools/trace-rail.py`: traces one rail of the drawing into an SVG path, for the trains' tracks in `MapShot.astro`
   and `Hero.astro`.
