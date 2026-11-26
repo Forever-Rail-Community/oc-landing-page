@@ -4,7 +4,7 @@ import LiveMap from './LiveMap.astro'
 ---
 
 <div class="shot">
-  <LiveMap view={[0, 310, 960, 590]} image="/map.webp" trainScale={1.4} cycle={54}
+  <LiveMap map="map" sizes="(max-width: 760px) 100vw, 50vw" trainScale={1.4} cycle={54}
     label="The live map: the rails over the hills and a river, with trains running along them in orange, and signals and switches changing as they pass">
     <!-- Places, all made up. -->
     <g class="places">

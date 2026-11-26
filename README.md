@@ -38,8 +38,8 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
 - `src/data/arrivals.ts`: what's on the arrivals board and when each is due (at launch, next update, future).
 - `src/data/site.ts`: the links (Discord, server status) and the description used in previews.
 - `public/`: images. `track.webp` is the rails drawn from the dashboard's map data (no names, trains or
-  signals). `tools/draw-map.py` draws terrain and rivers under them: `route.webp` (the whole route, behind the
-  opening), `route-tall.webp` (the same on its side, for phones), `map.webp` and `map-join.webp`. `logo.png`, `favicon.png` and `apple-touch-icon.png` are from the Forever
+  signals). `tools/draw-map.py` draws terrain and rivers under them: the maps at several widths in `maps/` (listed in
+  `src/data/maps.json`): the whole route behind the opening (and on its side for phones), and the live maps. `logo.png`, `favicon.png` and `apple-touch-icon.png` are from the Forever
   Rail logos. `og.png` is the preview Discord and other sites show; retake it (1200 × 630) when the opening's look
   changes.
 
