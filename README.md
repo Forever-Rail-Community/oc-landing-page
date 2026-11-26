@@ -24,6 +24,8 @@ Vercel builds it with `npm run build` and serves `dist/` (set in `vercel.json`);
   - `Arrivals.astro`, with `src/scripts/flaps.ts`: what's next, as a split-flap arrivals board whose lettering flips
     into place as it scrolls into view. It says when each thing is due, never how far along it is.
   - `TopBar.astro`, and `Join.astro`, which ends the page.
+  - `DiscordButton.astro`: the Join the Discord button, in Discord's colors with its icon (from Simple Icons, a
+    build-time dependency), used in the top bar, the opening and the closing call.
 - `src/scripts/motion.ts`: page-wide motion on [Motion](https://motion.dev): the reading line under the top bar, the
   "What's inside" parts, the closing call and its icon coming in, the pictures lifting when pointed at, and buttons giving under a
   press.

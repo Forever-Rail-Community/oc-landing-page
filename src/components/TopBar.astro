@@ -1,6 +1,6 @@
 ---
 // The bar along the top: the logo, the sections, and the way in. Turns solid once the page scrolls past the top.
-import { DISCORD_URL } from '../data/site'
+import DiscordButton from './DiscordButton.astro'
 ---
 
 <header class="top">
@@ -9,7 +9,7 @@ import { DISCORD_URL } from '../data/site'
   <nav aria-label="On this page">
     <a href="#inside">What's inside</a>
     <a href="#next">What's next</a>
-    <a class="button primary" href={DISCORD_URL}>Join the Discord</a>
+    <DiscordButton compact />
   </nav>
   <i class="progress" aria-hidden="true"></i>
 </header>
@@ -38,7 +38,6 @@ import { DISCORD_URL } from '../data/site'
   nav { margin-left: auto; display: flex; align-items: center; gap: 22px; }
   nav a:not(.button) { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 15px; }
   nav a:not(.button):hover { color: var(--text); }
-  .button { min-height: 38px; }
   @media (max-width: 760px), (max-height: 600px) {
     .top { padding: 14px 20px; }
     img { height: 34px; }

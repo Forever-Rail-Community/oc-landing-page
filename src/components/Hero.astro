@@ -1,6 +1,6 @@
 ---
 // The opening: the jigsaw (src/scripts/puzzle.ts) with the message in its gap.
-import { DISCORD_URL } from '../data/site'
+import DiscordButton from './DiscordButton.astro'
 ---
 
 <section class="hero">
@@ -37,7 +37,7 @@ import { DISCORD_URL } from '../data/site'
     <h1>The last piece is on its way.</h1>
     <p class="lede">Watch the railroad run live, dispatch it together, and help shape what comes next. The Forever Rail Operations Center is coming here soon.</p>
     <div class="buttons">
-      <a class="button primary" href={DISCORD_URL}>Join the Discord</a>
+      <DiscordButton />
       <a class="button" href="#inside">See what's inside</a>
     </div>
   </div>
