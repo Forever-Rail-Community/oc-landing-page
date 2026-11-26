@@ -1,5 +1,5 @@
 ---
-// The "Shape what comes next" picture: roadmap items moving from a request to done. The names are blurred bars, so
+// The "Shape what comes next" picture: roadmap items moving from planned to complete. The names are blurred bars, so
 // the picture shows how the roadmap works without saying what's on it.
 const ITEMS = [
   { width: 62, stage: 'Planned' },
@@ -9,7 +9,7 @@ const ITEMS = [
 ]
 ---
 
-<div class="shot" role="img" aria-label="The roadmap: requests moving through planned and in progress to done">
+<div class="shot" role="img" aria-label="The roadmap: items moving from planned, through up next and in progress, to complete">
   {ITEMS.map((item) => <div><i style={`width: ${item.width}%`}></i><span class:list={{ now: item.now }}>{item.stage}</span></div>)}
 </div>
 

@@ -2,18 +2,21 @@
 // map would show them.
 //  - A signal (<g class="signal" data-track data-at data-side>) stands beside its track at `at`, a fraction of the run
 //    in the direction of travel, on the side named (above or below). It shows red while a train is in the block just
-//    past it, or is waiting at the station just short of it; yellow while a train is in the block after that; and
-//    green otherwise. So a train holds at a red signal and it clears just before the train pulls away.
+//    past it, or while a train is running into the station just short of it or waiting there; yellow when the next
+//    signal along is red; and green otherwise. So a train comes up to its station on yellow, stops at red, and the
+//    signal clears just before it pulls away.
 //  - Switches (<g class="switches" data-points="x,y x,y ...">) sit where rails branch in the drawing (found by
 //    tools/find-switches.py). As a train comes up to a switch on its track, the switch lights its route.
 import { make, type Train } from './trains'
 
 const BLOCK = 120 // drawing units
-const HOLD_S = 1.2 // the station signal clears this long before the train leaves
+const HOLD_S = 0.5 // the station signal clears this long before the train leaves
+const STATION = 30 // a station's signal stands within this far past where trains stop
 const LINE_AHEAD = 110 // a switch lights its route this far ahead of a train, until the train has passed
 const ON_TRACK = 4 // a switch belongs to a track that passes this close
 
-interface Signal { train: Train[]; at: number; head: SVGCircleElement }
+interface Signal { train: Train[]; at: number; head: SVGCircleElement; aspect: Aspect; next?: Signal }
+type Aspect = 'clear' | 'approach' | 'stop'
 interface Switch { routes: { train: Train; at: number }[]; marker: SVGCircleElement; lined: SVGPathElement }
 
 const runToPath = (train: Train, d: number) => (train.reverse ? train.length - d : d)
@@ -34,8 +37,14 @@ export function startWayside(shot: SVGSVGElement, trains: Train[], scale: number
     const off = (k: number) => ({ x: (p.x + n.x * k * scale).toFixed(1), y: (p.y + n.y * k * scale).toFixed(1) })
     const foot = off(4), top = off(10), head = off(13)
     make('line', { class: 'mast', x1: foot.x, y1: foot.y, x2: top.x, y2: top.y }, g)
-    return { train, at, head: make('circle', { class: 'head', cx: head.x, cy: head.y, r: 3 * scale }, g) }
+    return { train, at, aspect: 'clear' as Aspect, head: make('circle', { class: 'head', cx: head.x, cy: head.y, r: 3 * scale }, g) }
   })
+  // Each signal's next one along the same track, in the direction of travel.
+  for (const signal of signals) {
+    signal.next = signals
+      .filter((other) => other.train[0] === signal.train[0] && other.at > signal.at)
+      .sort((a, b) => a.at - b.at)[0]
+  }
 
   const switches: Switch[] = []
   shot.querySelectorAll<SVGGElement>('.switches[data-points]').forEach((g) => {
@@ -58,15 +67,17 @@ export function startWayside(shot: SVGSVGElement, trains: Train[], scale: number
 
   return function update() {
     for (const signal of signals) {
-      let aspect = 'clear'
-      for (const train of signal.train) {
-        if (!train.shown) continue
-        const ahead = (from: number, to: number) => train.rear < signal.at + to && train.front > signal.at + from
-        const holding = train.waiting > HOLD_S && signal.at - train.front >= 0 && signal.at - train.front < 30
-        if (ahead(0, BLOCK) || holding) aspect = 'stop'
-        else if (ahead(BLOCK, 2 * BLOCK) && aspect === 'clear') aspect = 'approach'
-      }
-      signal.head.setAttribute('data-aspect', aspect)
+      signal.aspect = signal.train.some((train) => {
+        if (!train.shown) return false
+        const occupied = train.rear < signal.at + BLOCK && train.front > signal.at
+        const station = signal.at - train.stopsAt >= 0 && signal.at - train.stopsAt < STATION
+        const holding = station && train.front <= train.stopsAt && (train.waiting === 0 || train.waiting > HOLD_S)
+        return occupied || holding
+      }) ? 'stop' : 'clear'
+    }
+    for (const signal of signals) {
+      if (signal.aspect === 'clear' && signal.next?.aspect === 'stop') signal.aspect = 'approach'
+      signal.head.setAttribute('data-aspect', signal.aspect)
     }
     for (const sw of switches) {
       const route = sw.routes.find(({ train, at }) => train.shown && at - train.front < LINE_AHEAD && train.rear < at)

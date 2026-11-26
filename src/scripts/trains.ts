@@ -30,10 +30,12 @@ export interface Train {
   scale: number
   below: boolean // its symbol goes under it, clear of trains passing the other way
   // Where it is now, for the signals and switches: its front and rear as distances along its run, whether it's in the
-  // picture, and how long it has left to wait if it's stopped at a station.
+  // picture, where it will next stop (as a distance along its run), and how long it has left to wait if it's stopped
+  // there.
   front: number
   rear: number
   shown: boolean
+  stopsAt: number
   waiting: number
 }
 
@@ -52,15 +54,16 @@ function schedule(length: number, speed: number, stops: number[], dwell: number,
   return { legs, cycle: Math.max(cycle, time + OFF_S) }
 }
 
-// Where along its track a train is at time t into its cycle, 0 to 1 (1 means it's gone off the picture), and how long
-// it has left to wait if it's stopped at a station.
-function along(train: Train, t: number): { at: number; waiting: number } {
+// Where along its track a train is at time t into its cycle, 0 to 1 (1 means it's gone off the picture), where it will
+// next stop, and how long it has left to wait if it's stopped there.
+interface Moment { at: number; stopsAt: number; waiting: number }
+function along(train: Train, t: number): Moment {
   const now = ((t % train.cycle) + train.cycle) % train.cycle
   for (const leg of train.legs) {
-    if (now < leg.start) return { at: leg.from, waiting: leg.start - now }
-    if (now <= leg.end) return { at: leg.from + (leg.to - leg.from) * ease((now - leg.start) / (leg.end - leg.start)), waiting: 0 }
+    if (now < leg.start) return { at: leg.from, stopsAt: leg.from, waiting: leg.start - now }
+    if (now <= leg.end) return { at: leg.from + (leg.to - leg.from) * ease((now - leg.start) / (leg.end - leg.start)), stopsAt: leg.to, waiting: 0 }
   }
-  return { at: 1, waiting: 0 }
+  return { at: 1, stopsAt: 1, waiting: 0 }
 }
 
 export function make<K extends keyof SVGElementTagNameMap>(name: K, attrs: Record<string, string | number>, parent: Element) {
@@ -91,18 +94,19 @@ function build(shot: SVGSVGElement, g: SVGGElement, scale: number): Train {
     below: g.dataset.label === 'below',
     reverse: g.dataset.reverse === 'true',
     offset: Number(g.dataset.offset ?? 0),
-    front: 0, rear: 0, shown: false, waiting: 0,
+    front: 0, rear: 0, shown: false, stopsAt: 1, waiting: 0,
     ...schedule(length, Number(g.dataset.speed), stops, Number(g.dataset.dwell ?? 4), Number(shot.dataset.cycle ?? 0))
   }
 }
 
-function draw(train: Train, at: number, waiting = 0) {
+function draw(train: Train, { at, stopsAt, waiting }: Moment) {
   // `at` runs 0 to 1 in the direction of travel; the front of the train is that far along.
   const way = train.reverse ? -1 : 1
   const front = (train.reverse ? 1 - at : at) * train.length
   train.front = at * train.length
   train.rear = train.front - train.vehicles[train.vehicles.length - 1]!.back - CAR.length * train.scale / 2
   train.shown = at < 1
+  train.stopsAt = stopsAt * train.length
   train.waiting = waiting
   const point = (s: number) => train.track.getPointAtLength(Math.min(train.length, Math.max(0, s)))
   for (const { el, back } of train.vehicles) {
@@ -126,7 +130,7 @@ export function startTrains(shot: SVGSVGElement) {
   const wayside = startWayside(shot, trains, scale)
 
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    trains.forEach((train) => draw(train, train.legs[0]!.to))
+    trains.forEach((train) => { const at = train.legs[0]!.to; draw(train, { at, stopsAt: at, waiting: Infinity }) })
     wayside()
     return
   }
@@ -136,8 +140,7 @@ export function startTrains(shot: SVGSVGElement) {
     started ||= now
     const t = (now - started) / 1000
     trains.forEach((train) => {
-      const { at, waiting } = along(train, t + train.offset)
-      draw(train, at, waiting)
+      draw(train, along(train, t + train.offset))
     })
     wayside()
     frame = requestAnimationFrame(tick)
